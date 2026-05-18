@@ -36,6 +36,17 @@
 
         <div class="settings-row">
           <div class="settings-row-info">
+            <div class="settings-row-label">デフォルト音量</div>
+            <div class="settings-row-desc">動画を開いたときに自動的に適用される音量</div>
+          </div>
+          <div class="settings-volume-wrap">
+            <input type="range" class="settings-volume-slider" id="defaultVolumeSlider" min="0" max="100" step="1" value="100" />
+            <span class="settings-volume-value" id="defaultVolumeValue">100%</span>
+          </div>
+        </div>
+
+        <div class="settings-row">
+          <div class="settings-row-info">
             <div class="settings-row-label">ループ再生</div>
             <div class="settings-row-desc">動画が終わったら同じ動画を繰り返し再生する</div>
           </div>

@@ -261,12 +261,21 @@
         </div>
       </div>
 
-      <!-- Right: playlist panel + related videos -->
+      <!-- Right: playlist panel + related videos / chat -->
       <aside class="watch-right" id="watchRight">
         <div id="playlistPanel" hidden></div>
-        <div class="related-title" id="relatedTitle">関連動画</div>
+        <div class="sidebar-toggle-header">
+          <div class="related-title" id="relatedTitle">関連動画</div>
+          <button class="sidebar-chat-toggle-btn" id="chatToggleBtn" title="チャットに切り替える">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+            チャット
+          </button>
+        </div>
         <div id="relatedList" class="related-list">
           <!-- skeletons injected by JS -->
+        </div>
+        <div class="sidebar-chat-container" id="sidebarChatContainer" hidden>
+          <iframe id="chatIframeMain" class="sidebar-chat-iframe" title="チャット"></iframe>
         </div>
       </aside>
     </div>
@@ -325,4 +334,49 @@
       </div>
     </div>
   </div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+(function () {
+  const CHAT_MAIN_URL = '/chat?embed=1';
+
+  const toggleBtn     = document.getElementById('chatToggleBtn');
+  const relatedList   = document.getElementById('relatedList');
+  const chatContainer = document.getElementById('sidebarChatContainer');
+  const relatedTitle  = document.getElementById('relatedTitle');
+  const iframeMain    = document.getElementById('chatIframeMain');
+
+  if (!toggleBtn || !relatedList || !chatContainer) return;
+
+  let chatOpen = false;
+  let loaded = false;
+
+  function openChat() {
+    chatOpen = true;
+    relatedList.hidden = true;
+    chatContainer.hidden = false;
+    toggleBtn.classList.add('is-chat-active');
+    relatedTitle.textContent = 'チャット';
+    toggleBtn.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/></svg> 関連動画';
+    if (!loaded) {
+      iframeMain.src = CHAT_MAIN_URL;
+      loaded = true;
+    }
+  }
+
+  function closeChat() {
+    chatOpen = false;
+    chatContainer.hidden = true;
+    relatedList.hidden = false;
+    toggleBtn.classList.remove('is-chat-active');
+    relatedTitle.textContent = '関連動画';
+    toggleBtn.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg> チャット';
+  }
+
+  toggleBtn.addEventListener('click', function () {
+    if (chatOpen) { closeChat(); } else { openChat(); }
+  });
+})();
+</script>
 {% endblock %}

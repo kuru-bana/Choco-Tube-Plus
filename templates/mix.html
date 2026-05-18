@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+{% block title %}ミックス — Inv-tube{% endblock %}
+{% block body_class %}page-playlist page-mix{% endblock %}
+{% block content %}
+<main>
+    <div id="mixSkeleton" class="playlist-skeleton">
+      <div class="pl-skeleton-header">
+        <div class="pl-skeleton-thumb skeleton-animate"></div>
+        <div class="pl-skeleton-meta">
+          <div class="skeleton-line skeleton-title skeleton-animate" style="width:70%"></div>
+          <div class="skeleton-line skeleton-animate" style="width:40%;margin-top:0.6rem"></div>
+        </div>
+      </div>
+      <div class="playlist-grid">
+        <div class="skeleton-card"><div class="skeleton-thumb"></div><div class="skeleton-info"><div class="skeleton-line skeleton-title"></div><div class="skeleton-line skeleton-title-short"></div><div class="skeleton-channel-row"><div class="skeleton-avatar"></div><div class="skeleton-line skeleton-channel"></div></div></div></div>
+        <div class="skeleton-card"><div class="skeleton-thumb"></div><div class="skeleton-info"><div class="skeleton-line skeleton-title"></div><div class="skeleton-line skeleton-title-short"></div><div class="skeleton-channel-row"><div class="skeleton-avatar"></div><div class="skeleton-line skeleton-channel"></div></div></div></div>
+        <div class="skeleton-card"><div class="skeleton-thumb"></div><div class="skeleton-info"><div class="skeleton-line skeleton-title"></div><div class="skeleton-line skeleton-title-short"></div><div class="skeleton-channel-row"><div class="skeleton-avatar"></div><div class="skeleton-line skeleton-channel"></div></div></div></div>
+        <div class="skeleton-card"><div class="skeleton-thumb"></div><div class="skeleton-info"><div class="skeleton-line skeleton-title"></div><div class="skeleton-line skeleton-title-short"></div><div class="skeleton-channel-row"><div class="skeleton-avatar"></div><div class="skeleton-line skeleton-channel"></div></div></div></div>
+        <div class="skeleton-card"><div class="skeleton-thumb"></div><div class="skeleton-info"><div class="skeleton-line skeleton-title"></div><div class="skeleton-line skeleton-title-short"></div><div class="skeleton-channel-row"><div class="skeleton-avatar"></div><div class="skeleton-line skeleton-channel"></div></div></div></div>
+        <div class="skeleton-card"><div class="skeleton-thumb"></div><div class="skeleton-info"><div class="skeleton-line skeleton-title"></div><div class="skeleton-line skeleton-title-short"></div><div class="skeleton-channel-row"><div class="skeleton-avatar"></div><div class="skeleton-line skeleton-channel"></div></div></div></div>
+      </div>
+    </div>
+
+    <div id="mixMain" hidden>
+      <div id="mixHeader" class="playlist-header"></div>
+      <div id="mixGrid" class="playlist-grid" style="max-width:1200px;margin:0 auto;padding:0 1.5rem;"></div>
+    </div>
+  </main>
+{% endblock %}

@@ -4,7 +4,14 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>{% block title %}Inv-tube{% endblock %}</title>
-  <link rel="stylesheet" href="/static/app.css" />
+  <link rel="stylesheet" href="/static/css/base.css?v=10" />
+  <link rel="stylesheet" href="/static/css/global.css?v=10" />
+  <link rel="stylesheet" href="/static/css/search.css?v=10" />
+  <link rel="stylesheet" href="/static/css/channel.css?v=10" />
+  <link rel="stylesheet" href="/static/css/watch.css?v=10" />
+  <link rel="stylesheet" href="/static/css/library.css?v=10" />
+  <link rel="stylesheet" href="/static/css/settings.css?v=10" />
+  <link rel="stylesheet" href="/static/css/shorts.css?v=10" />
   {% block head %}{% endblock %}
 </head>
 <body class="{% block body_class %}{% endblock %}">
@@ -23,6 +30,10 @@
         <ul id="suggestions" class="suggestions-list" hidden></ul>
       </div>
       <nav class="header-nav">
+        <a href="/links" class="header-nav-link{% if active == 'links' %} active{% endif %}">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>
+          <span>リンク</span>
+        </a>
         <a href="/dl" class="header-nav-link{% if active == 'dl' %} active{% endif %}">
           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
           <span>ダウンロード</span>
@@ -45,7 +56,22 @@
 
   {% block content %}{% endblock %}
 
-  <script src="/static/app.js"></script>
+  <script src="/static/js/utils.js?v=10"></script>
+  <script src="/static/js/components.js?v=10"></script>
+  <script src="/static/js/library.js?v=10"></script>
+  <script src="/static/js/header.js?v=10"></script>
+  <script src="/static/js/page-trending.js?v=10"></script>
+  <script src="/static/js/page-search.js?v=10"></script>
+  <script src="/static/js/page-channel.js?v=10"></script>
+  <script src="/static/js/page-playlist.js?v=10"></script>
+  <script src="/static/js/page-mix.js?v=10"></script>
+  <script src="/static/js/page-hashtag.js?v=10"></script>
+  <script src="/static/js/page-watch.js?v=10"></script>
+  <script src="/static/js/page-library.js?v=10"></script>
+  <script src="/static/js/page-dl.js?v=10"></script>
+  <script src="/static/js/page-settings.js?v=10"></script>
+  <script src="/static/js/background.js?v=10"></script>
+  <script src="/static/js/page-shorts.js?v=10"></script>
   {% block scripts %}{% endblock %}
 </body>
 </html>

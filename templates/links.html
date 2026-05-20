@@ -1,0 +1,341 @@
+{% extends "base.html" %}
+{% block title %}リンクリスト — Inv-tube{% endblock %}
+{% block body_class %}page-links{% endblock %}
+{% block content %}
+<main class="links-main">
+  <div class="links-header">
+    <h1 class="links-title">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="22" height="22"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>
+      Inv-tube リンクリスト
+    </h1>
+    <p class="links-subtitle">登録されているインスタンスの一覧とバージョン情報</p>
+  </div>
+
+  <div class="links-controls">
+    <div class="links-toggle-group">
+      <button class="links-toggle-btn active" data-view="version">バージョン別</button>
+      <button class="links-toggle-btn" data-view="domain">ドメイン別</button>
+      <button class="links-toggle-btn" data-view="all">すべて</button>
+    </div>
+    <div id="linksStatus" class="links-status-text">読み込み中...</div>
+  </div>
+
+  <div id="linksContainer" class="links-container"></div>
+</main>
+
+<style>
+.links-main {
+  max-width: 960px;
+  margin: 0 auto;
+  padding: 2rem 1.5rem 5rem;
+}
+
+.links-header {
+  margin-bottom: 2rem;
+}
+
+.links-title {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  font-size: 1.4rem;
+  font-weight: 800;
+  color: var(--text);
+  text-shadow: 0 0 24px rgba(167,139,250,0.4);
+  margin-bottom: 0.4rem;
+}
+
+.links-title svg { color: var(--accent-bright); }
+
+.links-subtitle {
+  font-size: 0.88rem;
+  color: var(--muted);
+}
+
+.links-controls {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 0.8rem;
+  margin-bottom: 1.75rem;
+}
+
+.links-toggle-group {
+  display: flex;
+  gap: 0.4rem;
+}
+
+.links-toggle-btn {
+  background: var(--surface);
+  color: var(--muted);
+  border: 1.5px solid var(--border);
+  border-radius: 8px;
+  padding: 0.4rem 1rem;
+  font-size: 0.83rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s, border-color 0.15s;
+}
+
+.links-toggle-btn.active,
+.links-toggle-btn:hover {
+  background: rgba(124,58,237,0.18);
+  color: var(--accent-bright);
+  border-color: var(--accent-bright);
+}
+
+.links-status-text {
+  font-size: 0.82rem;
+  color: var(--muted);
+}
+
+.links-container {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.links-group {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  overflow: hidden;
+  backdrop-filter: blur(12px);
+}
+
+.links-group-header {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.85rem 1.25rem;
+  background: rgba(124,58,237,0.08);
+  border-bottom: 1px solid var(--border);
+}
+
+.links-group-label {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--accent-bright);
+}
+
+.links-group-count {
+  font-size: 0.78rem;
+  color: var(--muted);
+  margin-left: auto;
+}
+
+.links-group-badge {
+  font-size: 0.72rem;
+  font-weight: 700;
+  padding: 2px 8px;
+  border-radius: 999px;
+  background: rgba(124,58,237,0.25);
+  color: var(--accent-bright);
+  border: 1px solid rgba(139,92,246,0.35);
+}
+
+.links-list {
+  list-style: none;
+}
+
+.links-item {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 0.75rem 1.25rem;
+  border-bottom: 1px solid rgba(139,92,246,0.08);
+  transition: background 0.15s;
+}
+
+.links-item:last-child { border-bottom: none; }
+.links-item:hover { background: rgba(124,58,237,0.06); }
+
+.links-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.links-dot.online { background: #22c55e; box-shadow: 0 0 6px rgba(34,197,94,0.7); }
+.links-dot.offline { background: #ef4444; box-shadow: 0 0 6px rgba(239,68,68,0.5); }
+
+.links-item-url {
+  flex: 1;
+  min-width: 0;
+  font-size: 0.88rem;
+  color: var(--text);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.links-item-url a {
+  color: inherit;
+  text-decoration: none;
+  transition: color 0.15s;
+}
+
+.links-item-url a:hover { color: var(--accent-bright); text-decoration: underline; }
+
+.links-item-ver {
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--muted);
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.links-item-ver.online { color: #86efac; }
+
+.links-empty {
+  padding: 3rem 2rem;
+  text-align: center;
+  color: var(--muted);
+  font-size: 0.9rem;
+}
+
+.links-skeleton {
+  height: 48px;
+  border-radius: 8px;
+  background: linear-gradient(90deg, var(--skeleton-base) 25%, var(--skeleton-shine) 50%, var(--skeleton-base) 75%);
+  background-size: 1600px 100%;
+  animation: shimmer 1.6s ease-in-out infinite;
+  margin: 0.5rem 1rem;
+}
+
+@media (max-width: 600px) {
+  .links-controls { flex-direction: column; align-items: flex-start; }
+  .links-item { gap: 0.6rem; }
+  .links-item-url { font-size: 0.8rem; }
+}
+</style>
+
+<script>
+(async () => {
+  const container = document.getElementById('linksContainer');
+  const statusEl = document.getElementById('linksStatus');
+  let currentView = 'version';
+  let allResults = [];
+
+  for (let i = 0; i < 4; i++) {
+    const sk = document.createElement('div');
+    sk.className = 'links-skeleton';
+    container.appendChild(sk);
+  }
+
+  try {
+    const res = await fetch('/api/linklist-status');
+    allResults = await res.json();
+  } catch (e) {
+    container.innerHTML = `<div class="links-empty">⚠️ データの取得に失敗しました</div>`;
+    statusEl.textContent = 'エラー';
+    return;
+  }
+
+  const online = allResults.filter(r => r.online).length;
+  statusEl.textContent = `${allResults.length}件中 ${online}件オンライン`;
+
+  function getDomain(url) {
+    try {
+      const host = new URL(url).hostname;
+      const parts = host.split('.');
+      if (parts.length >= 2) return parts.slice(-2).join('.');
+      return host;
+    } catch { return url; }
+  }
+
+  function renderGroups(groups) {
+    container.innerHTML = '';
+    if (!groups.length) {
+      container.innerHTML = `<div class="links-empty">登録されているリンクがありません</div>`;
+      return;
+    }
+    groups.forEach(({ label, badge, items }) => {
+      const group = document.createElement('div');
+      group.className = 'links-group';
+
+      const header = document.createElement('div');
+      header.className = 'links-group-header';
+      header.innerHTML = `
+        <span class="links-group-label">${label}</span>
+        ${badge ? `<span class="links-group-badge">${badge}</span>` : ''}
+        <span class="links-group-count">${items.length}件</span>
+      `;
+      group.appendChild(header);
+
+      const list = document.createElement('ul');
+      list.className = 'links-list';
+      items.forEach(item => {
+        const li = document.createElement('li');
+        li.className = 'links-item';
+        li.innerHTML = `
+          <span class="links-dot ${item.online ? 'online' : 'offline'}"></span>
+          <span class="links-item-url"><a href="${item.url}" target="_blank" rel="noopener">${item.url}</a></span>
+          <span class="links-item-ver ${item.online ? 'online' : ''}">${item.online ? 'v' + item.ver : 'オフライン'}</span>
+        `;
+        list.appendChild(li);
+      });
+      group.appendChild(list);
+      container.appendChild(group);
+    });
+  }
+
+  function buildVersionView() {
+    const map = new Map();
+    allResults.forEach(r => {
+      const key = r.online ? `v${r.ver}` : 'オフライン';
+      if (!map.has(key)) map.set(key, []);
+      map.get(key).push(r);
+    });
+    const sorted = [...map.entries()].sort(([a], [b]) => {
+      if (a === 'オフライン') return 1;
+      if (b === 'オフライン') return -1;
+      return b.localeCompare(a, undefined, { numeric: true });
+    });
+    return sorted.map(([ver, items]) => ({
+      label: ver === 'オフライン' ? 'オフライン' : `バージョン ${ver}`,
+      badge: ver === 'オフライン' ? null : ver,
+      items,
+    }));
+  }
+
+  function buildDomainView() {
+    const map = new Map();
+    allResults.forEach(r => {
+      const key = getDomain(r.url);
+      if (!map.has(key)) map.set(key, []);
+      map.get(key).push(r);
+    });
+    const sorted = [...map.entries()].sort(([, a], [, b]) => b.length - a.length);
+    return sorted.map(([domain, items]) => ({
+      label: domain,
+      badge: null,
+      items,
+    }));
+  }
+
+  function buildAllView() {
+    return [{ label: 'すべてのインスタンス', badge: null, items: allResults }];
+  }
+
+  function render() {
+    if (currentView === 'version') renderGroups(buildVersionView());
+    else if (currentView === 'domain') renderGroups(buildDomainView());
+    else renderGroups(buildAllView());
+  }
+
+  document.querySelectorAll('.links-toggle-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.links-toggle-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      currentView = btn.dataset.view;
+      render();
+    });
+  });
+
+  render();
+})();
+</script>
+{% endblock %}

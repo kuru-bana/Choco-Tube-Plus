@@ -1878,6 +1878,162 @@ body.theme-blue {
   color: #f39c12;
 }
 
+.tos-modal {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.7);
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+}
+
+.tos-modal.hidden {
+  display: none;
+}
+
+.tos-modal-content {
+  background: #fff;
+  border-radius: 10px;
+  width: 100%;
+  max-width: 680px;
+  max-height: 90vh;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+  overflow: hidden;
+}
+
+.tos-title {
+  padding: 20px 24px 6px;
+  font-size: 20px;
+  font-weight: bold;
+  border-bottom: 1px solid #e0e0e0;
+  color: #222;
+}
+
+.tos-instruction {
+  padding: 8px 24px;
+  font-size: 13px;
+  color: #888;
+  border-bottom: 1px solid #f0f0f0;
+  background: #fafafa;
+}
+
+.tos-body {
+  flex: 1;
+  overflow-y: auto;
+  padding: 16px 24px;
+  font-size: 14px;
+  line-height: 1.8;
+  color: #333;
+}
+
+.tos-body h3 {
+  font-size: 15px;
+  font-weight: bold;
+  margin: 18px 0 6px;
+  color: #111;
+}
+
+.tos-body h4 {
+  font-size: 14px;
+  font-weight: bold;
+  margin: 12px 0 4px;
+  color: #333;
+}
+
+.tos-body p {
+  margin-bottom: 8px;
+}
+
+.tos-body ol,
+.tos-body ul {
+  padding-left: 20px;
+  margin-bottom: 8px;
+}
+
+.tos-body li {
+  margin-bottom: 4px;
+}
+
+.tos-footer {
+  padding: 14px 24px;
+  border-top: 1px solid #e0e0e0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  background: #fafafa;
+}
+
+.tos-scroll-hint {
+  font-size: 13px;
+  color: #e67e22;
+  font-weight: bold;
+  transition: opacity 0.3s;
+}
+
+.tos-scroll-hint.done {
+  opacity: 0;
+}
+
+.tos-agree-btn {
+  padding: 10px 28px;
+  background: #2ecc71;
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  font-size: 15px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background 0.2s, opacity 0.2s;
+}
+
+.tos-agree-btn:disabled {
+  background: #aaa;
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+.tos-agree-btn:not(:disabled):hover {
+  background: #27ae60;
+}
+
+.theme-dark .tos-modal-content {
+  background: #2a2a2a;
+  color: #ddd;
+}
+
+.theme-dark .tos-title {
+  color: #eee;
+  border-bottom-color: #444;
+}
+
+.theme-dark .tos-instruction {
+  color: #aaa;
+  background: #222;
+  border-bottom-color: #333;
+}
+
+.theme-dark .tos-body {
+  color: #ccc;
+}
+
+.theme-dark .tos-body h3 {
+  color: #eee;
+}
+
+.theme-dark .tos-body h4 {
+  color: #ddd;
+}
+
+.theme-dark .tos-footer {
+  background: #222;
+  border-top-color: #444;
+}
+
 /* サーバー情報バー（常時固定） */
 #server-info-bar {
   position: sticky;
@@ -1960,7 +2116,7 @@ body.theme-blue {
   <!-- 認証画面 -->
   <div id="auth-section">
     <div class="auth-container">
-      <h1>チョコおみくじ</h1>
+      <h1>チョコChat</h1>
 
       <div id="login-form" class="auth-form active">
         <h3>ログイン</h3>
@@ -2004,10 +2160,11 @@ body.theme-blue {
 
     <div class="chat-header">
       <h1>choco-chat</h1>
-      <h2>ベータ版です。改善点あったら教えて</h2>
+      <h2>利用規約を遵守すること</h2>
       <div class="header-buttons">
         <button id="admin-panel-btn" class="hidden">管理者パネル</button>
         <button id="admin-list-btn">管理者リスト</button>
+        <button id="tos-btn">利用規約</button>
       </div>
     </div>
 
@@ -2032,7 +2189,7 @@ body.theme-blue {
     </div>
 
     <div class="input-area">
-      <textarea id="message-input" maxlength="200" placeholder="メッセージを入力...　　　　（ご自由にどうぞ）　...管理者リストに載っていない管理者の人を見かけましたら報告お願いします"></textarea>
+      <textarea id="message-input" maxlength="200" placeholder="メッセージを入力...　　　　（ご自由にどうぞ）　...管理者リストに載っていない管理者の人や利用規約を守れていない人を見かけましたら報告お願いします"></textarea>
       <div class="input-controls">
         <div class="input-hint">Enterで送信 / Shift+Enter または Space+Enterで改行</div>
         <div class="char-count"><span id="char-counter">0</span>/200</div>
@@ -2237,6 +2394,218 @@ body.theme-blue {
     </div>
   </div>
 
+<div id="tos-modal" class="tos-modal hidden">
+    <div class="tos-modal-content">
+      <h2 class="tos-title">利用規約</h2>
+      <p class="tos-instruction">最後までスクロールすると同意ボタンが押せるようになります。</p>
+      <div class="tos-body" id="tos-body">
+        <p><strong>最終更新日: 2026年5月21日</strong></p>
+        <p>本利用規約（以下「本規約」）は、本サービス（以下「本サービス」）の利用条件を定めるものです。利用者は、本規約に同意したうえで本サービスを利用するものとします。</p>
+        <p>本サービスは、オープンチャット形式のコミュニケーションサービスです。多くの利用者がリアルタイムで利用する特性上、安全性・秩序維持・荒らし対策を重視したモデレーションを行っています。</p>
+
+        <h3>第1条（適用）</h3>
+        <ol>
+          <li>本規約は、本サービスの提供条件および本サービス利用に関する運営者と利用者との間の権利義務関係を定めるものです。</li>
+          <li>利用者は、本規約に同意した場合のみ本サービスを利用できます。</li>
+          <li>本サービス上に掲載されるガイドライン、ルール、注意事項等は、本規約の一部を構成するものとします。</li>
+          <li>運営は、本サービスの安全性・安定性・秩序維持を目的として、必要な範囲で利用制限やモデレーションを行う場合があります。</li>
+        </ol>
+
+        <h3>第2条（アカウント）</h3>
+        <ol>
+          <li>利用者は、虚偽の情報を用いてアカウントを作成してはなりません。</li>
+          <li>アカウントの譲渡、共有、貸与は禁止します。</li>
+          <li>利用停止措置、BAN、ミュート等を回避する目的でのアカウント作成を禁止します。</li>
+          <li>運営は、不正利用または規約違反が確認された場合、事前通知なくアカウント停止または削除を行う場合があります。</li>
+          <li>利用者は、自身のアカウント管理について責任を負うものとします。</li>
+        </ol>
+
+        <h3>第3条（禁止事項）</h3>
+        <p>利用者は、本サービスの利用にあたり、以下の行為を行ってはなりません。</p>
+
+        <h4>3-1. 違法・危険行為</h4>
+        <ul>
+          <li>法令または公序良俗に反する行為</li>
+          <li>犯罪行為または犯罪を助長する行為</li>
+          <li>自殺、自傷、危険行為等を助長または誘導する行為</li>
+          <li>詐欺、脅迫、恐喝等に関連する行為</li>
+          <li>違法薬物、武器、不正ツール等に関する投稿</li>
+          <li>リーク情報、違法取得情報等の投稿</li>
+        </ul>
+
+        <h4>3-2. 不適切コンテンツ</h4>
+        <ul>
+          <li>わいせつ、性的、過度に暴力的またはグロテスクな内容の投稿</li>
+          <li>未成年に不適切な内容の投稿</li>
+          <li>過激または著しく不快と判断される表現</li>
+          <li>ショックコンテンツの拡散</li>
+        </ul>
+
+        <h4>3-3. 権利侵害</h4>
+        <ul>
+          <li>著作権、商標権、肖像権、プライバシー権等を侵害する行為</li>
+          <li>無断転載、違法アップロード</li>
+          <li>他者の個人情報を本人の許可なく投稿または共有する行為</li>
+          <li>なりすまし行為</li>
+        </ul>
+
+        <h4>3-4. コミュニティ妨害</h4>
+        <ul>
+          <li>荒らし、スパム、大量投稿、連投</li>
+          <li>意味のない文字列、大量AA、同一内容連投等の迷惑投稿</li>
+          <li>BOT、自動化ツール等による投稿またはアクセス</li>
+          <li>通報機能の悪用</li>
+          <li>サービス運営を妨害する行為</li>
+          <li>意図的なチャット妨害</li>
+          <li>他ユーザーへの執拗な攻撃、誹謗中傷、嫌がらせ</li>
+          <li>過度な暴言、挑発、威圧的行為</li>
+          <li>コミュニティ秩序を著しく乱す行為</li>
+          <li>他チャットの宣伝(channel talk, line, その他すべて)</li>
+        </ul>
+
+        <h4>3-5. サービス攻撃・技術的妨害</h4>
+        <ul>
+          <li>不正アクセス</li>
+          <li>脆弱性探索、攻撃行為</li>
+          <li>田代砲、DoS、DDoS、大量リクエスト送信等によるサービス妨害</li>
+          <li>過度な負荷を与える行為</li>
+          <li>システムまたはネットワークへの攻撃</li>
+          <li>スクレイピング、クローリング等の自動取得行為</li>
+          <li>リバースエンジニアリング</li>
+        </ul>
+
+        <h4>3-6. 外部誘導・宣伝</h4>
+        <ul>
+          <li>出会い目的での利用</li>
+          <li>他チャットサービス、コミュニティ、SNS等への勧誘または宣伝</li>
+          <li>悪質な外部サイトへの誘導</li>
+          <li>フィッシング、マルウェア配布等を目的とした投稿</li>
+        </ul>
+
+        <h4>3-7. 接続・アクセス制限</h4>
+        <ul>
+          <li>VPN、プロキシ、Tor、匿名化サービス等を利用したアクセス</li>
+          <li>接続元情報を偽装または隠蔽する行為</li>
+          <li>BAN回避を目的としたアクセス</li>
+          <li>運営が許可していない経路からのアクセス</li>
+        </ul>
+        <p>ただし、運営が特別に許可した一部アクセス経路についてはこの限りではありません。</p>
+
+        <h4>3-8. その他</h4>
+        <ul>
+          <li>その他、運営が本サービスの安全性・秩序維持に支障があると判断する行為</li>
+        </ul>
+
+        <h3>第4条（投稿データ・ログ保存）</h3>
+        <ol>
+          <li>投稿メッセージは、サービス運営、障害調査、不正対策、荒らし対策等のためサーバー上に保存される場合があります。</li>
+          <li>一定件数を超えた古いメッセージは、通常表示対象外となる場合があります。</li>
+          <li>利用者が削除したデータについても、バックアップ、ログ、障害調査等の目的で一定期間保存される場合があります。</li>
+          <li>運営は、必要に応じて投稿内容、接続ログ等を確認する場合があります。</li>
+          <li>本サービスでは、以下を含む情報を記録する場合があります。</li>
+        </ol>
+        <ul>
+          <li>IPアドレス</li>
+          <li>User-Agent</li>
+          <li>投稿履歴</li>
+          <li>接続時刻</li>
+          <li>通報履歴</li>
+          <li>モデレーション履歴</li>
+          <li>アクセスログ</li>
+        </ul>
+        <ol start="6">
+          <li>運営は、法令に基づく要請があった場合、必要な範囲で情報を開示する場合があります。</li>
+        </ol>
+
+        <h3>第5条（モデレーション）</h3>
+        <ol>
+          <li>運営は、本サービスの安全性および秩序維持のため、投稿削除、ミュート、機能制限、アクセス制限、アカウント停止、BAN等の措置を行うことがあります。</li>
+          <li>荒らし、BOT利用、スパム、DoS攻撃、サービス妨害、違法行為等については、事前通知なく即時BANとなる場合があります。</li>
+          <li>暴言、誹謗中傷、挑発行為等については、ミュートまたは投稿制限を行う場合があります。</li>
+          <li>本サービスでは、自動判定システムを利用して投稿制限、ミュート、BAN等を行う場合があります。</li>
+          <li>自動判定には誤検知が含まれる場合があります。</li>
+          <li>運営は、モデレーション措置の理由説明を行う義務を負いません。</li>
+          <li>利用者は、運営のモデレーション判断に従うものとします。</li>
+        </ol>
+
+        <h3>第6条（アクセス制限・セキュリティ）</h3>
+        <ol>
+          <li>本サービスでは、安全性維持のためCAPTCHA、レート制限等を導入しています。</li>
+          <li>運営は、一部地域、IPアドレス、ネットワーク等からのアクセスを制限する場合があります。</li>
+          <li>VPN、プロキシ等の利用が確認された場合、ミュート、アクセス制限、アカウント停止またはBAN等の措置を行う場合があります。</li>
+          <li>運営は、セキュリティ上必要と判断した場合、特定ユーザーまたは接続元に対して追加制限を行う場合があります。</li>
+        </ol>
+
+        <h3>第7条（サービス変更・停止）</h3>
+        <ol>
+          <li>運営は、利用者への事前通知なく、本サービスの内容変更、一時停止、終了を行うことがあります。</li>
+          <li>システム保守、障害対応、攻撃対策等のため、一時的にサービスを停止する場合があります。</li>
+          <li>サービス終了時、運営は利用者データの保存を保証しません。</li>
+        </ol>
+
+        <h3>第8条（免責）</h3>
+        <ol>
+          <li>運営は、本サービスに投稿される情報の正確性、安全性、適法性、有用性を保証するものではありません。</li>
+          <li>利用者間で発生したトラブルについて、運営は責任を負いません。</li>
+          <li>サーバー障害、通信障害、データ消失、誤BAN等によって生じた損害について、運営は責任を負わないものとします。</li>
+          <li>運営は、本サービスが常時利用可能であることを保証しません。</li>
+          <li>利用者は、自己責任で本サービスを利用するものとします。</li>
+        </ol>
+
+        <h3>第9条（規約変更）</h3>
+        <ol>
+          <li>運営は、必要に応じて本規約を変更できるものとします。</li>
+          <li>変更後の規約は、本サービス上に掲載した時点から効力を生じるものとします。</li>
+          <li>規約変更後に本サービスを利用した場合、利用者は変更後の規約に同意したものとみなします。</li>
+        </ol>
+
+        <h3>第10条（準拠法）</h3>
+        <p>本規約は日本法に準拠し、日本法に基づいて解釈されます。</p>
+
+        <h3>第11条（知的財産権）</h3>
+        <ol>
+          <li>本サービスに関するシステム、デザイン、ロゴ、プログラム等の権利は運営または正当な権利者に帰属します。</li>
+          <li>利用者は、法令で認められる範囲を超えて、本サービスの内容を無断で転載、複製、配布、改変してはなりません。</li>
+        </ol>
+
+        <h3>第12条（利用環境）</h3>
+        <ol>
+          <li>利用者は、自己の責任と費用において本サービスを利用するための端末、通信環境等を用意するものとします。</li>
+          <li>通信環境、端末性能、ブラウザ等により、本サービスの一部機能が正常に動作しない場合があります。</li>
+        </ol>
+
+        <h3>第13条（未成年者の利用）</h3>
+        <ol>
+          <li>未成年者は、保護者等法定代理人の同意を得たうえで本サービスを利用するものとします。</li>
+          <li>運営は、未成年者保護の観点から必要と判断した場合、利用制限を行うことがあります。</li>
+        </ol>
+
+        <h3>第14条（反社会的勢力の排除）</h3>
+        <p>利用者は、暴力団、反社会的勢力その他これに準ずる者ではないことを表明し、将来にわたっても該当しないことを保証するものとします。</p>
+
+        <h3>第15条（分離可能性）</h3>
+        <p>本規約の一部が法令等により無効または執行不能と判断された場合であっても、その他の規定は継続して有効に存続するものとします。</p>
+
+        <h3>第16条（権利義務の譲渡禁止）</h3>
+        <p>利用者は、運営の事前承諾なく、本規約上の地位または権利義務を第三者へ譲渡または担保提供してはなりません。</p>
+
+        <h3>第17条（お問い合わせ）</h3>
+        <p>本サービスに関するお問い合わせは、運営が指定する方法により行うものとします。</p>
+
+        <h3>第18条</h3>
+        <p>あとはココ・woolisbest・、・、・明治、その他管理者っぽい人々の独断と偏見で判断します。</p>
+        <ul>
+          <li>広島県に対する誹謗中傷はバン対象となります。（by 明治）</li>
+          <li>群馬県をグンマー帝国と呼びましょう（for remon）</li>
+        </ul>
+      </div>
+      <div class="tos-footer">
+        <p id="tos-scroll-hint" class="tos-scroll-hint">↓ 最後までスクロールしてください</p>
+        <button id="tos-agree-btn" class="tos-agree-btn" disabled>同意する</button>
+      </div>
+    </div>
+  </div>
+  
   <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
   <script>
 (function() {
@@ -2570,6 +2939,44 @@ function handleLoginSuccess(response) {
   localStorage.setItem('chatDisplayName', response.account.displayName);
 
   authSection.classList.add('hidden');
+
+  
+  showTosModal(response);
+}
+
+function showTosModal(response) {
+  const tosModal = document.getElementById('tos-modal');
+  const tosBody = document.getElementById('tos-body');
+  const tosAgreeBtn = document.getElementById('tos-agree-btn');
+  const tosScrollHint = document.getElementById('tos-scroll-hint');
+
+  tosBody.scrollTop = 0;
+  tosAgreeBtn.disabled = true;
+  tosScrollHint.classList.remove('done');
+  tosModal.classList.remove('hidden');
+
+  function checkScroll() {
+    const threshold = 20;
+    const atBottom = tosBody.scrollHeight - tosBody.scrollTop - tosBody.clientHeight <= threshold;
+    if (atBottom) {
+      tosAgreeBtn.disabled = false;
+      tosScrollHint.classList.add('done');
+      tosBody.removeEventListener('scroll', checkScroll);
+    }
+  }
+
+  tosBody.addEventListener('scroll', checkScroll);
+  checkScroll();
+
+  tosAgreeBtn.onclick = function() {
+    tosModal.classList.add('hidden');
+    if (response) {
+      showChatSection(response);
+    }
+  };
+}
+
+function showChatSection(response) {
   chatSection.classList.remove('hidden');
 
   document.getElementById('current-display-name').textContent = currentUser;

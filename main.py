@@ -272,7 +272,11 @@ async def proxy_parallel(category: str, invidious_path: str, exclude_list: list 
     if not instances:
         raise Exception(f'No working instances for category "{category}" after exclusions')
 
-    tasks = [asyncio.create_task(_try_instance(base, invidious_path)) for base in instances]
+    task_to_base = {
+        asyncio.create_task(_try_instance(base, invidious_path)): base
+        for base in instances
+    }
+    tasks = list(task_to_base)
     errors = []
     pending = set(tasks)
     winner = None
@@ -302,7 +306,7 @@ async def proxy_parallel(category: str, invidious_path: str, exclude_list: list 
                         winner = result
                 else:
                     msg = str(exc) or type(exc).__name__
-                    errors.append(f"{base}:{msg}")
+                    errors.append(f"{task_to_base.get(task, '?')}:{msg}")
             if winner is not None:
                 break
     finally:

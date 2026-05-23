@@ -4,14 +4,14 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>{% block title %}Choco-tube-plus{% endblock %}</title>
-  <link rel="stylesheet" href="/static/css/base.css?v=15" />
-  <link rel="stylesheet" href="/static/css/global.css?v=15" />
-  <link rel="stylesheet" href="/static/css/search.css?v=15" />
-  <link rel="stylesheet" href="/static/css/channel.css?v=15" />
-  <link rel="stylesheet" href="/static/css/watch.css?v=15" />
-  <link rel="stylesheet" href="/static/css/library.css?v=15" />
-  <link rel="stylesheet" href="/static/css/settings.css?v=15" />
-  <link rel="stylesheet" href="/static/css/shorts.css?v=15" />
+  <link rel="stylesheet" href="/static/css/base.css?v={{ static_ver }}" />
+  <link rel="stylesheet" href="/static/css/global.css?v={{ static_ver }}" />
+  <link rel="stylesheet" href="/static/css/search.css?v={{ static_ver }}" />
+  <link rel="stylesheet" href="/static/css/channel.css?v={{ static_ver }}" />
+  <link rel="stylesheet" href="/static/css/watch.css?v={{ static_ver }}" />
+  <link rel="stylesheet" href="/static/css/library.css?v={{ static_ver }}" />
+  <link rel="stylesheet" href="/static/css/settings.css?v={{ static_ver }}" />
+  <link rel="stylesheet" href="/static/css/shorts.css?v={{ static_ver }}" />
   {% block head %}{% endblock %}
 </head>
 <body class="{% block body_class %}{% endblock %}">
@@ -56,22 +56,22 @@
 
   {% block content %}{% endblock %}
 
-  <script src="/static/js/utils.js?v=15"></script>
-  <script src="/static/js/components.js?v=15"></script>
-  <script src="/static/js/library.js?v=15"></script>
-  <script src="/static/js/header.js?v=15"></script>
-  <script src="/static/js/page-trending.js?v=15"></script>
-  <script src="/static/js/page-search.js?v=15"></script>
-  <script src="/static/js/page-channel.js?v=15"></script>
-  <script src="/static/js/page-playlist.js?v=15"></script>
-  <script src="/static/js/page-mix.js?v=15"></script>
-  <script src="/static/js/page-hashtag.js?v=15"></script>
-  <script src="/static/js/page-watch.js?v=15"></script>
-  <script src="/static/js/page-library.js?v=15"></script>
-  <script src="/static/js/page-dl.js?v=15"></script>
-  <script src="/static/js/page-settings.js?v=15"></script>
-  <script src="/static/js/background.js?v=15"></script>
-  <script src="/static/js/page-shorts.js?v=15"></script>
+  <script src="/static/js/utils.js?v={{ static_ver }}"></script>
+  <script src="/static/js/components.js?v={{ static_ver }}"></script>
+  <script src="/static/js/library.js?v={{ static_ver }}"></script>
+  <script src="/static/js/header.js?v={{ static_ver }}"></script>
+  <script src="/static/js/page-trending.js?v={{ static_ver }}"></script>
+  <script src="/static/js/page-search.js?v={{ static_ver }}"></script>
+  <script src="/static/js/page-channel.js?v={{ static_ver }}"></script>
+  <script src="/static/js/page-playlist.js?v={{ static_ver }}"></script>
+  <script src="/static/js/page-mix.js?v={{ static_ver }}"></script>
+  <script src="/static/js/page-hashtag.js?v={{ static_ver }}"></script>
+  <script src="/static/js/page-watch.js?v={{ static_ver }}"></script>
+  <script src="/static/js/page-library.js?v={{ static_ver }}"></script>
+  <script src="/static/js/page-dl.js?v={{ static_ver }}"></script>
+  <script src="/static/js/page-settings.js?v={{ static_ver }}"></script>
+  <script src="/static/js/background.js?v={{ static_ver }}"></script>
+  <script src="/static/js/page-shorts.js?v={{ static_ver }}"></script>
   {% block scripts %}{% endblock %}
   <script>
     fetch('/version').then(r=>r.json()).then(d=>{

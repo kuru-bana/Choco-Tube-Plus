@@ -996,8 +996,9 @@ function setupPlayer(streamData, videoId) {
 
     player.addEventListener('error', () => {
       if (!isExternalEmbedModeActive()) {
+        const savedTime = player.currentTime;
         player.setAttribute('hidden', '');
-        doStreamAlt(videoId).catch(() => {
+        doStreamAlt(videoId, savedTime).catch(() => {
           reloadAll(videoId);
         });
       }
@@ -2134,7 +2135,7 @@ function prefetchAltStream(videoId, excludeList) {
   streamAltPool = fetchStream(`/api/stream/${videoId}${excludeParam}`).catch(() => null);
 }
 
-async function doStreamAlt(videoId) {
+async function doStreamAlt(videoId, restoreTime = 0) {
   const btn = document.getElementById('streamAltBtn');
   const status = document.getElementById('streamAltStatus');
   const shouldShowStatus = () => isStreamModeActive();
@@ -2200,6 +2201,7 @@ async function doStreamAlt(videoId) {
         lastNormalStreamSrc = bestFormat.url;
         player.src = bestFormat.url;
         player.muted = volState.muted;
+        if (restoreTime > 0) player.currentTime = restoreTime;
         const vcQualBtn2 = document.getElementById('vcQualBtn');
         if (vcQualBtn2) vcQualBtn2.textContent = bestFormat.qualityLabel || bestFormat.quality || '画質';
         const firstOpt2 = document.querySelector('#vcQualOpts .vctrls-dd-opt');
@@ -2207,7 +2209,7 @@ async function doStreamAlt(videoId) {
         document.querySelectorAll('#qualityBtns .quality-btn-track[data-track-mode="normal"]').forEach(b => b.classList.add('active'));
         if (isStreamModeActive()) {
           player.removeAttribute('hidden');
-          player.play().catch(() => {});
+          tryAutoplay(player, null);
         }
       }
       setupStreamOnlyBtns();

@@ -261,11 +261,18 @@ function createHomeShelf(title, items) {
     .filter(i => i.type === 'GridVideo' || (i.type === 'LockupView' && i.content_type === 'VIDEO'))
     .map(i => i.video_id || i.content_id)
     .filter(Boolean);
+  const shortIds = items
+    .filter(i => i.type === 'LockupView' && i.content_type === 'SHORT')
+    .map(i => i.content_id)
+    .filter(Boolean);
   if (videoIds.length > 0) {
     const playAllBtn = document.createElement('button');
     playAllBtn.className = 'ch-home-play-all-btn';
     playAllBtn.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" width="13" height="13"><polygon points="5,3 19,12 5,21"/></svg> すべて再生`;
     playAllBtn.addEventListener('click', () => {
+      if (videoIds.length > 1) {
+        try { sessionStorage.setItem('chHomeVideoQueue', JSON.stringify(videoIds)); } catch (_) {}
+      }
       location.href = `/watch?v=${encodeURIComponent(videoIds[0])}`;
     });
     header.appendChild(playAllBtn);
@@ -284,7 +291,10 @@ function createHomeShelf(title, items) {
       if (card) row.appendChild(card);
     } else if (item.type === 'LockupView' && item.content_type === 'SHORT') {
       const card = createHomeLockupCard(item);
-      if (card) row.appendChild(card);
+      if (card) {
+        if (item.content_id) card.dataset.vid = item.content_id;
+        row.appendChild(card);
+      }
     } else if (item.type === 'LockupView' && item.content_type === 'PLAYLIST') {
       const card = createHomeLockupPlaylistCard(item);
       if (card) row.appendChild(card);
@@ -298,6 +308,15 @@ function createHomeShelf(title, items) {
   }
 
   if (!row.children.length) return null;
+
+  if (shortIds.length > 1) {
+    row.addEventListener('click', e => {
+      const card = e.target.closest('a[data-vid]');
+      if (!card) return;
+      try { sessionStorage.setItem('chHomeShortQueue', JSON.stringify(shortIds)); } catch (_) {}
+    });
+  }
+
   div.appendChild(row);
   return div;
 }

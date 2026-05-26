@@ -284,7 +284,51 @@
     });
   }
 
+  async function loadTrending() {
+    const grid = document.getElementById('recommendGrid');
+    if (!grid) return;
+    grid.innerHTML = '';
+    for (let i = 0; i < 20; i++) grid.appendChild(createSkeletonCard());
+    try {
+      const raw = await fetchMain('/api/trending');
+      const data = Array.isArray(raw) ? raw : (raw.results || raw.videos || []);
+      grid.innerHTML = '';
+      if (!data.length) {
+        grid.innerHTML = `<div class="empty-state"><p>トレンド動画が見つかりませんでした。</p></div>`;
+        return;
+      }
+      const missingIcons = [];
+      data.forEach(video => {
+        const card = createVideoCard(video);
+        grid.appendChild(card);
+        if (!video.authorThumbnails && video.authorId) {
+          missingIcons.push({ card, authorId: video.authorId });
+        }
+      });
+      if (missingIcons.length > 0) fillMissingIcons(missingIcons);
+    } catch {
+      grid.innerHTML = `<div class="error-state"><div class="error-icon">⚠️</div><p>トレンド動画の取得に失敗しました。</p></div>`;
+    }
+  }
+
+  function initTabs() {
+    const tabs = document.querySelectorAll('.home-tab');
+    if (!tabs.length) return;
+    let current = 'recommend';
+    tabs.forEach(tab => {
+      tab.addEventListener('click', () => {
+        const t = tab.dataset.tab;
+        if (t === current) return;
+        current = t;
+        tabs.forEach(b => b.classList.toggle('active', b.dataset.tab === t));
+        if (t === 'recommend') loadRecommended();
+        else loadTrending();
+      });
+    });
+  }
+
   initHeroSearch();
   initHeaderSearch();
+  initTabs();
   loadRecommended();
 })();

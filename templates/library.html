@@ -36,6 +36,11 @@
         マイプレイリスト
         <span class="lib-tab-count" id="plCount"></span>
       </button>
+      <button class="lib-tab" data-tab="shorts-history">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="15" height="15"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+        ショート履歴
+        <span class="lib-tab-count" id="shortsHistCount"></span>
+      </button>
       <button class="lib-tab" data-tab="favorites">
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="15" height="15"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
         お気に入り
@@ -67,6 +72,22 @@
         <p class="lib-empty-hint">動画を視聴すると自動的に記録されます</p>
       </div>
       <div class="video-grid" id="histGrid"></div>
+    </div>
+
+    <!-- ショート視聴履歴 -->
+    <div class="lib-content" id="shortsHistPanel" hidden>
+      <div class="lib-hist-toolbar" id="shortsHistToolbar" hidden>
+        <button class="lib-clear-btn" id="clearShortsHistBtn">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4h6v2"/></svg>
+          履歴をすべて削除
+        </button>
+      </div>
+      <div class="lib-empty" id="shortsHistEmpty" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="48" height="48"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+        <p>ショートの視聴履歴はありません</p>
+        <p class="lib-empty-hint">ショートを視聴すると自動的に記録されます</p>
+      </div>
+      <div class="lib-shorts-hist-grid" id="shortsHistGrid"></div>
     </div>
 
     <!-- マイプレイリスト -->

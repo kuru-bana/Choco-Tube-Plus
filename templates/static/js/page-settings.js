@@ -56,8 +56,9 @@ function initSettings() {
   const searchDurationSelect  = document.getElementById('searchDurationSelect');
   const searchTypeSelect      = document.getElementById('searchTypeSelect');
   const searchFeaturesWrap    = document.getElementById('searchFeaturesWrap');
-  const searchIncludeShorts   = document.getElementById('searchIncludeShortsToggle');
-  const searchSuggestions     = document.getElementById('searchSuggestionsToggle');
+  const searchIncludeShorts      = document.getElementById('searchIncludeShortsToggle');
+  const searchSuggestions        = document.getElementById('searchSuggestionsToggle');
+  const searchSourceOrderSelect  = document.getElementById('searchSourceOrderSelect');
 
   speedSelect.value            = String(settings.defaultSpeed);
   loopToggle.checked           = !!settings.loop;
@@ -73,8 +74,9 @@ function initSettings() {
   searchDateSelect.value      = settings.searchDate     || '';
   searchDurationSelect.value  = settings.searchDuration || '';
   searchTypeSelect.value      = settings.searchType     || 'all';
-  searchIncludeShorts.checked = settings.searchIncludeShorts !== false;
-  searchSuggestions.checked   = settings.searchSuggestions  !== false;
+  searchIncludeShorts.checked     = settings.searchIncludeShorts !== false;
+  searchSuggestions.checked       = settings.searchSuggestions  !== false;
+  searchSourceOrderSelect.value   = settings.searchSourceOrder  || 'inv-piped';
   if (settings.searchFeatures) {
     settings.searchFeatures.split(',').forEach(f => {
       const cb = searchFeaturesWrap.querySelector(`input[value="${f}"]`);
@@ -125,6 +127,7 @@ function initSettings() {
       searchFeatures:       getSelectedFeatures(),
       searchIncludeShorts:  searchIncludeShorts.checked,
       searchSuggestions:    searchSuggestions.checked,
+      searchSourceOrder:    searchSourceOrderSelect.value,
     });
     showToast();
   }
@@ -156,6 +159,7 @@ function initSettings() {
   searchFeaturesWrap.addEventListener('change', persistSearch);
   searchIncludeShorts.addEventListener('change', persistSearch);
   searchSuggestions.addEventListener('change', persistSearch);
+  searchSourceOrderSelect.addEventListener('change', persistSearch);
 
   initShortsSourceOrder(showToast);
 
@@ -177,8 +181,9 @@ function initSettings() {
     searchDurationSelect.value  = def.searchDuration || '';
     searchTypeSelect.value      = def.searchType     || 'all';
     searchFeaturesWrap.querySelectorAll('input').forEach(cb => cb.checked = false);
-    searchIncludeShorts.checked = def.searchIncludeShorts !== false;
-    searchSuggestions.checked   = def.searchSuggestions  !== false;
+    searchIncludeShorts.checked    = def.searchIncludeShorts !== false;
+    searchSuggestions.checked      = def.searchSuggestions  !== false;
+    searchSourceOrderSelect.value  = 'inv-piped';
     updateVolSliderFill();
     initShortsSourceOrder(showToast);
     showToast();

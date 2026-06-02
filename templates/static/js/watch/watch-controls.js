@@ -1,6 +1,16 @@
 function instanceHostname(invInstance) {
   if (!invInstance) return '';
+  if (invInstance === 'rapidapi') return 'RapidAPI';
   try { return new URL(invInstance).hostname; } catch { return invInstance; }
+}
+
+async function fetchBestStream(videoId, excludeParam) {
+  const invPath = `/api/stream/${videoId}${excludeParam || ''}`;
+  const src = (typeof streamSourcePref !== 'undefined') ? streamSourcePref : 'auto';
+  if (src === 'invidious') return fetchStream(invPath);
+  if (src === 'rapidapi')  return fetchRapidStream(videoId);
+  // auto: fire both in parallel, return first valid
+  return Promise.any([fetchStream(invPath), fetchRapidStream(videoId)]).catch(() => fetchStream(invPath));
 }
 
 function setInstanceLabel(invInstance) {
@@ -27,7 +37,7 @@ async function doStreamAlt(videoId, restoreTime = 0) {
     const excludeParam = streamExcludeList.length
       ? '?exclude=' + encodeURIComponent(streamExcludeList.join(','))
       : '';
-    const result = await fetchStream(`/api/stream/${videoId}${excludeParam}`);
+    const result = await fetchBestStream(videoId, excludeParam);
 
     const { data: newStreamData, instanceUrl: newInstanceUrl } = result;
 
@@ -984,6 +994,7 @@ async function initWatch(videoId) {
   initModeBar(videoId);
   initCustomControls();
   initNarrowSidebar();
+  initPlaybackSettingsPanel();
   initComments(videoId);
   if (listParam) initPlaylistPanel(listParam, indexParam);
 
@@ -1011,7 +1022,7 @@ async function initWatch(videoId) {
 
   try {
     const [streamResult, metaData] = await Promise.all([
-      withRetry(() => fetchStream(`/api/stream/${videoId}`)),
+      withRetry(() => fetchBestStream(videoId)),
       withRetry(() => fetchMain(`/api/videos/${videoId}`))
     ]);
 
@@ -1062,6 +1073,7 @@ async function initWatch(videoId) {
       _posPlayer.addEventListener('ended', () => clearSavedPosition(videoId), { once: true });
     }
 
+    updatePbsetPanel();
     renderVideoInfo(metaData, videoId);
     const _related = metaData.recommendedVideos || [];
     _relatedVideos = _related;

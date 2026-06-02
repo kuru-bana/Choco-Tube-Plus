@@ -245,7 +245,7 @@ async function reloadAll(videoId) {
 
   try {
     const [streamResult, metaData] = await Promise.all([
-      withRetry(() => fetchStream(`/api/stream/${videoId}`)),
+      withRetry(() => fetchBestStream(videoId)),
       withRetry(() => fetchMain(`/api/videos/${videoId}`))
     ]);
 

@@ -119,10 +119,30 @@
   </div>
 </div>
 
-<div class="filter-bar" id="filterBar">
+<style>
+  .filter-bar[data-search-source="piped"] .filter-group[data-source="invidious"] { display: none; }
+  .filter-bar[data-search-source="invidious"] .filter-group[data-source="piped"] { display: none; }
+  .search-source-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 11px;
+    font-weight: 600;
+    padding: 2px 8px;
+    border-radius: 10px;
+    margin-left: 8px;
+    vertical-align: middle;
+  }
+  .search-source-badge.source-piped { background: #e8f5e9; color: #2e7d32; border: 1px solid #a5d6a7; }
+  .search-source-badge.source-invidious { background: #e3f2fd; color: #1565c0; border: 1px solid #90caf9; }
+  [data-ui="pro"] .search-source-badge.source-piped { background: #1b3a1e; color: #81c784; border-color: #388e3c; }
+  [data-ui="pro"] .search-source-badge.source-invidious { background: #0d2137; color: #64b5f6; border-color: #1565c0; }
+</style>
+
+<div class="filter-bar" id="filterBar" data-search-source="invidious">
     <div class="filter-bar-inner">
 
-      <div class="filter-group">
+      <div class="filter-group" data-source="invidious">
         <label class="filter-label">並び順</label>
         <select id="sortSelect" class="filter-select">
           <option value="relevance">関連度順</option>
@@ -132,7 +152,7 @@
         </select>
       </div>
 
-      <div class="filter-group">
+      <div class="filter-group" data-source="invidious">
         <label class="filter-label">投稿日</label>
         <select id="dateSelect" class="filter-select">
           <option value="">すべて</option>
@@ -144,7 +164,7 @@
         </select>
       </div>
 
-      <div class="filter-group">
+      <div class="filter-group" data-source="invidious">
         <label class="filter-label">動画長</label>
         <select id="durationSelect" class="filter-select">
           <option value="">すべて</option>
@@ -154,7 +174,7 @@
         </select>
       </div>
 
-      <div class="filter-group">
+      <div class="filter-group" data-source="invidious">
         <label class="filter-label">種別</label>
         <select id="typeSelect" class="filter-select">
           <option value="all">すべて</option>
@@ -166,7 +186,7 @@
         </select>
       </div>
 
-      <div class="filter-group">
+      <div class="filter-group" data-source="invidious">
         <label class="filter-label">機能</label>
         <div class="features-wrap">
           <button type="button" class="features-toggle" id="featuresToggle">
@@ -187,9 +207,24 @@
         </div>
       </div>
 
-      <div class="filter-group">
+      <div class="filter-group" data-source="invidious">
         <label class="filter-label">地域</label>
         <select id="regionSelect" class="filter-select region-select-sm"></select>
+      </div>
+
+      <!-- Piped-specific filters -->
+      <div class="filter-group" data-source="piped">
+        <label class="filter-label">種別</label>
+        <select id="pipedFilterSelect" class="filter-select">
+          <option value="all">すべて</option>
+          <option value="videos">動画</option>
+          <option value="channels">チャンネル</option>
+          <option value="playlists">再生リスト</option>
+          <option value="music_songs">音楽（曲）</option>
+          <option value="music_videos">音楽（動画）</option>
+          <option value="music_albums">音楽（アルバム）</option>
+          <option value="music_playlists">音楽（プレイリスト）</option>
+        </select>
       </div>
 
     </div>
@@ -199,6 +234,7 @@
     <div id="shortsSection" hidden></div>
     <div class="result-header" id="resultHeader" hidden>
       <span id="resultInfo"></span>
+      <span id="searchSourceBadge" class="search-source-badge" hidden></span>
     </div>
     <div id="resultGrid" class="video-grid"></div>
     <div class="pagination" id="pagination" hidden>

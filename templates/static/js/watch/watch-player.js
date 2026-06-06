@@ -64,7 +64,12 @@ function setupPlayer(streamData, videoId) {
     player.addEventListener('error', playerErrorHandler);
   }
 
-  initHQMode(streamData);
+  const hasAdaptive = (streamData.adaptiveFormats || []).length > 0;
+  if (hasAdaptive) {
+    initHQMode(streamData);
+  } else {
+    if (typeof setPendingHQMode === 'function') setPendingHQMode();
+  }
   setupStreamOnlyBtns();
 }
 

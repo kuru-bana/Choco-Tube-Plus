@@ -8,6 +8,25 @@ from core import templates
 
 router = APIRouter()
 
+ACCESS_COUNTER_URL = "https://choco-access-counter.onrender.com/api/count"
+
+
+async def _fetch_access_count() -> int:
+    try:
+        resp = await core.http_client.get(
+            ACCESS_COUNTER_URL,
+            headers={
+                "Cache-Control": "no-store, no-cache",
+                "Pragma": "no-cache",
+            },
+            extensions={"cache_disabled": True},
+        )
+        if resp.status_code == 200:
+            return resp.json().get("count", 0)
+    except Exception:
+        pass
+    return 0
+
 
 @router.get("/")
 async def index_page(request: Request):
@@ -15,7 +34,8 @@ async def index_page(request: Request):
     if not core._keepalive_self_url:
         core._keepalive_self_url = self_url
     asyncio.create_task(core._ping_keepalive(self_url))
-    return templates.TemplateResponse(request, "index.html")
+    access_count = await _fetch_access_count()
+    return templates.TemplateResponse(request, "index.html", {"access_count": access_count})
 
 
 @router.get("/trending")

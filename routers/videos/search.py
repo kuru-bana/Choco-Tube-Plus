@@ -101,12 +101,27 @@ def _normalize_piped_item(item: dict) -> dict | None:
     return None
 
 
+_SEARCH_CACHE: dict = {}
+_SEARCH_TTL = 60
+_SEARCH_MAX = 200
+
+_SUGGEST_CACHE: dict = {}
+_SUGGEST_TTL = 30
+_SUGGEST_MAX = 200
+
+
 @router.get("/api/piped-search")
 async def api_piped_search(
     q: str = Query(...),
     filter: str = Query(default="all"),
     nextpage: str | None = Query(default=None),
 ):
+    cache_key = f"{q}:{filter}:{nextpage or ''}"
+    now = time.time()
+    cached = _SEARCH_CACHE.get(cache_key)
+    if cached and now - cached["time"] < _SEARCH_TTL:
+        return JSONResponse(cached["data"])
+
     instances = await _get_piped_instances("search")
     client = await get_client()
     last_err = None
@@ -126,12 +141,18 @@ async def api_piped_search(
             raw = resp.json()
             items = raw.get("items", [])
             results = [r for item in items if (r := _normalize_piped_item(item)) is not None]
-            return JSONResponse({
+            data = {
                 "results": results,
                 "nextpage": raw.get("nextpage"),
                 "_source": "piped",
                 "_instance": instance,
-            })
+            }
+            if results:
+                if len(_SEARCH_CACHE) >= _SEARCH_MAX:
+                    oldest = min(_SEARCH_CACHE, key=lambda k: _SEARCH_CACHE[k]["time"])
+                    _SEARCH_CACHE.pop(oldest, None)
+                _SEARCH_CACHE[cache_key] = {"data": data, "time": time.time()}
+            return JSONResponse(data)
         except Exception as e:
             last_err = e
     return JSONResponse({"error": str(last_err or "all piped instances failed")}, status_code=502)
@@ -139,6 +160,11 @@ async def api_piped_search(
 
 @router.get("/api/piped-suggestions")
 async def api_piped_suggestions(q: str = Query(...)):
+    now = time.time()
+    cached = _SUGGEST_CACHE.get(q)
+    if cached and now - cached["time"] < _SUGGEST_TTL:
+        return JSONResponse(cached["data"])
+
     instances = await _get_piped_instances("suggestions")
     client = await get_client()
     last_err = None
@@ -153,9 +179,12 @@ async def api_piped_suggestions(q: str = Query(...)):
                 last_err = Exception(f"HTTP {resp.status_code} from {instance}")
                 continue
             data = resp.json()
-            if isinstance(data, list):
-                return JSONResponse({"suggestions": data})
-            return JSONResponse({"suggestions": []})
+            result = {"suggestions": data if isinstance(data, list) else []}
+            if len(_SUGGEST_CACHE) >= _SUGGEST_MAX:
+                oldest = min(_SUGGEST_CACHE, key=lambda k: _SUGGEST_CACHE[k]["time"])
+                _SUGGEST_CACHE.pop(oldest, None)
+            _SUGGEST_CACHE[q] = {"data": result, "time": time.time()}
+            return JSONResponse(result)
         except Exception as e:
             last_err = e
     return JSONResponse({"suggestions": []})

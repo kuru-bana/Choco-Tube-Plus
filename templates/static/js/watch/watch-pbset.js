@@ -7,6 +7,7 @@ function _getCurrentMode() {
   if (document.getElementById('modeHQ')?.classList.contains('active'))       return 'hq';
   if (document.getElementById('modeNocookie')?.classList.contains('active')) return 'nocookie';
   if (document.getElementById('modeEdu')?.classList.contains('active'))      return 'edu';
+  if (document.getElementById('modePiped')?.classList.contains('active'))    return 'piped';
   return 'stream';
 }
 
@@ -150,7 +151,7 @@ function _renderTab() {
 }
 
 async function _applyPending() {
-  const modeMap = { stream: 'modeStream', hq: 'modeHQ', nocookie: 'modeNocookie', edu: 'modeEdu' };
+  const modeMap = { stream: 'modeStream', hq: 'modeHQ', nocookie: 'modeNocookie', edu: 'modeEdu', piped: 'modePiped' };
   const currentMode = _getCurrentMode();
 
   if (_pending.mode && _pending.mode !== currentMode) {
@@ -215,10 +216,11 @@ function _renderPlaybackTab() {
   const modeRow = document.getElementById('pbsetModeRow');
   if (modeRow) {
     const modes = [
-      { id: 'modeStream',   label: 'ストリーム', key: 'stream' },
-      { id: 'modeHQ',       label: '高画質HQ',  key: 'hq' },
-      { id: 'modeNocookie', label: '埋込',       key: 'nocookie' },
-      { id: 'modeEdu',      label: '教育',       key: 'edu' },
+      { id: 'modeStream',   label: 'ストリーム',  key: 'stream' },
+      { id: 'modeHQ',       label: '高画質HQ',   key: 'hq' },
+      { id: 'modeNocookie', label: 'nocookie',   key: 'nocookie' },
+      { id: 'modeEdu',      label: 'edu',        key: 'edu' },
+      { id: 'modePiped',    label: 'Piped',      key: 'piped' },
     ];
     modeRow.innerHTML = '';
     modes.forEach(m => {
@@ -515,7 +517,7 @@ function _renderPlaybackTab() {
     if (_hasPending()) {
       bar.style.display = '';
       if (lbl) {
-        const mNames = { stream: 'ストリーム', hq: '高画質HQ', nocookie: '埋込', edu: '教育' };
+        const mNames = { stream: 'ストリーム', hq: '高画質HQ', nocookie: 'nocookie', edu: 'edu', piped: 'Piped' };
         const tNames = { normal: '通常', audio: '音声のみ', video: '映像のみ' };
         const parts = [];
         if (_pending.mode)               parts.push('モード → ' + (mNames[_pending.mode] || _pending.mode));

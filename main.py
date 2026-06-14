@@ -6,6 +6,7 @@ from fastapi import FastAPI
 from fastapi.staticfiles import StaticFiles
 from starlette.middleware.base import BaseHTTPMiddleware
 from starlette.middleware.gzip import GZipMiddleware
+from starlette.responses import RedirectResponse
 from fastapi.responses import FileResponse
 
 import core
@@ -15,6 +16,24 @@ from routers.videos import watch, channel, shorts, search, download
 from routers.tool import youtube as tool_youtube
 from routers.tool import game as tool_game
 from routers.tool import programing as tool_programing
+
+AUTH_COOKIE_NAME = "choco_auth"
+AUTH_COOKIE_VALUE = "choco_session_ok"
+
+# パスを完全一致 or prefix で許可するリスト（ログイン不要）
+_PUBLIC_EXACT = {"/login", "/api/login"}
+_PUBLIC_PREFIX = ("/static/", "/photo/", "/proxy/", "/thumb/")
+
+
+class AuthMiddleware(BaseHTTPMiddleware):
+    async def dispatch(self, request, call_next):
+        path = request.url.path
+        if path in _PUBLIC_EXACT or path.startswith(_PUBLIC_PREFIX):
+            return await call_next(request)
+        token = request.cookies.get(AUTH_COOKIE_NAME)
+        if token != AUTH_COOKIE_VALUE:
+            return RedirectResponse(url="/login")
+        return await call_next(request)
 
 
 @asynccontextmanager
@@ -73,5 +92,6 @@ class StaticCacheMiddleware(BaseHTTPMiddleware):
         return response
 
 
+app.add_middleware(AuthMiddleware)
 app.add_middleware(StaticCacheMiddleware)
 app.add_middleware(GZipMiddleware, minimum_size=500)

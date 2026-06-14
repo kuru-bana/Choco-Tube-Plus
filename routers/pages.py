@@ -108,6 +108,35 @@ async def login_page(request: Request):
     return templates.TemplateResponse(request, "login.html")
 
 
+@router.get("/forgot")
+async def forgot_page(request: Request):
+    return templates.TemplateResponse(request, "forgot.html")
+
+
+@router.post("/api/quiz-login")
+async def api_quiz_login(request: Request):
+    try:
+        data = await request.json()
+    except Exception:
+        return JSONResponse({"ok": False, "message": "リクエストが無効です"}, status_code=400)
+
+    score = data.get("score", 0)
+    total = data.get("total", 5)
+
+    if score < 3:
+        return JSONResponse({"ok": False, "message": "正解数が足りません"}, status_code=401)
+
+    response = JSONResponse({"ok": True, "redirect": "/"})
+    response.set_cookie(
+        AUTH_COOKIE_NAME,
+        AUTH_COOKIE_VALUE,
+        httponly=True,
+        samesite="lax",
+        max_age=86400 * 30,
+    )
+    return response
+
+
 @router.post("/api/login")
 async def api_login(request: Request):
     try:

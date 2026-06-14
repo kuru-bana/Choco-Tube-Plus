@@ -1,10 +1,15 @@
 import asyncio
 
 from fastapi import APIRouter, Request
-from fastapi.responses import FileResponse
+from fastapi.responses import FileResponse, JSONResponse
+from starlette.responses import RedirectResponse
 
 import core
 from core import templates
+
+HARDCODED_PASSWORD = "choco"
+AUTH_COOKIE_NAME = "choco_auth"
+AUTH_COOKIE_VALUE = "choco_session_ok"
 
 router = APIRouter()
 
@@ -96,6 +101,41 @@ async def settings_page(request: Request):
 @router.get("/links")
 async def links_page(request: Request):
     return templates.TemplateResponse(request, "links.html")
+
+
+@router.get("/login")
+async def login_page(request: Request):
+    return templates.TemplateResponse(request, "login.html")
+
+
+@router.post("/api/login")
+async def api_login(request: Request):
+    try:
+        data = await request.json()
+    except Exception:
+        return JSONResponse({"ok": False, "message": "リクエストが無効です"}, status_code=400)
+
+    password = (data.get("password") or "").strip()
+
+    if password and password != HARDCODED_PASSWORD:
+        return JSONResponse({"ok": False, "message": "パスワードが正しくありません"}, status_code=401)
+
+    response = JSONResponse({"ok": True, "redirect": "/"})
+    response.set_cookie(
+        AUTH_COOKIE_NAME,
+        AUTH_COOKIE_VALUE,
+        httponly=True,
+        samesite="lax",
+        max_age=86400 * 30,
+    )
+    return response
+
+
+@router.get("/logout")
+async def logout():
+    response = RedirectResponse(url="/login")
+    response.delete_cookie(AUTH_COOKIE_NAME)
+    return response
 
 
 @router.get("/chat")

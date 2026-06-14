@@ -8,6 +8,13 @@ router = APIRouter()
 
 GAMES = [
     {
+        "slug": "choco-quiz",
+        "title": "チョコクイズ",
+        "thumb": "/photo/game/choco-quiz.svg",
+        "desc": "チョコレートの知識を試す本格クイズ！ステージ1〜5＆エンドレスモードで腕試し。",
+        "file": "templates/tool/game/fun/choco-quiz.html",
+    },
+    {
         "slug": "2048",
         "title": "2048",
         "thumb": "/photo/game/2048.webp",

@@ -43,23 +43,31 @@
     return `https://www.youtubeeducation.com/embed/${videoId}${param}`;
   }
 
+  function applyEduParams(data) {
+    if (!Array.isArray(data) || !data.length) return false;
+    eduParams = data;
+    const sel = document.getElementById('sfParamSelect');
+    if (sel) {
+      sel.innerHTML = '';
+      eduParams.forEach((p, i) => {
+        const opt = document.createElement('option');
+        opt.value = i;
+        opt.textContent = p.label;
+        sel.appendChild(opt);
+      });
+      sel.selectedIndex = 0;
+    }
+    return true;
+  }
+
   async function fetchEduParams() {
+    // バックエンドがテンプレートに埋め込んだキャッシュデータを優先使用
+    if (window._EDU_PARAMS && applyEduParams(window._EDU_PARAMS)) return;
+    // キャッシュ未取得（初回起動直後等）はAPIから取得
     try {
       const res = await fetch('/api/edu-params');
       const data = await res.json();
-      if (!Array.isArray(data)) return;
-      eduParams = data;
-      const sel = document.getElementById('sfParamSelect');
-      if (sel) {
-        sel.innerHTML = '';
-        eduParams.forEach((p, i) => {
-          const opt = document.createElement('option');
-          opt.value = i;
-          opt.textContent = p.label;
-          sel.appendChild(opt);
-        });
-        sel.selectedIndex = 0;
-      }
+      applyEduParams(data);
     } catch (_) {}
   }
 
@@ -499,16 +507,15 @@
 
     initSfComments();
 
-    // プレイヤーをすぐ起動（eduParams未取得でもフォールバック値で再生開始）
+    // テンプレート埋め込みのeduParamsを同期で即適用してからプレイヤー起動
+    if (window._EDU_PARAMS) applyEduParams(window._EDU_PARAMS);
     loadPlayer(startId);
     updateNavBtns();
 
     (async () => {
-      // eduParams と メタデータを並行取得
+      // eduParamsが未適用ならAPIから取得してリロード
       fetchEduParams().then(() => {
-        // eduParams が取れたらプレイヤーを正式パラメータで再ロード
-        // （フォールバック '?autoplay=1' から変わった場合のみ）
-        if (eduParams.length && queue[queueIdx]?.videoId === startId) {
+        if (!window._EDU_PARAMS && eduParams.length && queue[queueIdx]?.videoId === startId) {
           loadPlayer(startId);
         }
       });

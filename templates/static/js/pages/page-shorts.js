@@ -363,6 +363,38 @@
     closeSfComments();
   }
 
+  // ===== SCROLL / SWIPE NAVIGATION =====
+  function initScrollNav() {
+    const root = document.getElementById('sfRoot');
+    if (!root) return;
+
+    // マウスホイール（デスクトップ）
+    let wheelCooldown = false;
+    root.addEventListener('wheel', e => {
+      e.preventDefault();
+      if (wheelCooldown) return;
+      wheelCooldown = true;
+      setTimeout(() => { wheelCooldown = false; }, 700);
+      if (e.deltaY > 0) navigateTo(queueIdx + 1);
+      else if (e.deltaY < 0) navigateTo(queueIdx - 1);
+    }, { passive: false });
+
+    // タッチスワイプ（モバイル）
+    let touchStartY = null;
+    root.addEventListener('touchstart', e => {
+      touchStartY = e.touches[0].clientY;
+    }, { passive: true });
+
+    root.addEventListener('touchend', e => {
+      if (touchStartY === null) return;
+      const dy = touchStartY - e.changedTouches[0].clientY;
+      touchStartY = null;
+      if (Math.abs(dy) < 50) return;
+      if (dy > 0) navigateTo(queueIdx + 1);
+      else navigateTo(queueIdx - 1);
+    }, { passive: true });
+  }
+
   // ===== COMMENTS =====
   let sfCommentsContinuation = null;
   let sfCommentsLoading = false;
@@ -506,6 +538,7 @@
     });
 
     initSfComments();
+    initScrollNav();
 
     // テンプレート埋め込みのeduParamsを同期で即適用してからプレイヤー起動
     if (window._EDU_PARAMS) applyEduParams(window._EDU_PARAMS);

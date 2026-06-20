@@ -146,38 +146,37 @@
 
   async function buildChannelQueue(chId, startId) {
     try {
-      let allVideos = [];
+      const existing = new Set([startId]);
       let cont = null;
       let page = 0;
       const MAX_PAGES = 4;
+      let foundStart = false;
+
       do {
         const data = await fetchChannelShortsPage(chId, cont);
         const vids = data.videos || data.shorts || [];
-        allVideos.push(...vids);
         cont = data.continuation || null;
         page++;
-        if (allVideos.some(v => v.videoId === startId)) break;
+
+        const newItems = vids.filter(v => {
+          if (!v.videoId || existing.has(v.videoId)) return false;
+          existing.add(v.videoId);
+          return true;
+        }).map(v => ({ videoId: v.videoId, meta: v }));
+
+        if (newItems.length) {
+          queue.push(...newItems);
+          updateNavBtns();
+        }
+
+        if (!foundStart && vids.some(v => v.videoId === startId)) {
+          foundStart = true;
+          break;
+        }
       } while (cont && page < MAX_PAGES);
 
       channelContinuation = cont;
-      const existing = new Set();
-      const items = allVideos.filter(v => {
-        if (!v.videoId || existing.has(v.videoId)) return false;
-        existing.add(v.videoId);
-        return true;
-      }).map(v => ({ videoId: v.videoId, meta: v }));
-
-      if (!items.length) return false;
-
-      const startIdx = items.findIndex(v => v.videoId === startId);
-      if (startIdx >= 0) {
-        queue = items;
-        queueIdx = startIdx;
-      } else {
-        queue = [{ videoId: startId, meta: null }, ...items];
-        queueIdx = 0;
-      }
-      return true;
+      return queue.length > 1;
     } catch (_) {
       return false;
     }
@@ -301,19 +300,21 @@
         tasks.push(fetchShortPage(searchQueryStr + ' #shorts', searchShortPage2));
       }
 
-      const results = await Promise.all(tasks);
-      const newItems = [];
-      results.flat().forEach(v => {
-        if (v.videoId && !existing.has(v.videoId)) {
-          existing.add(v.videoId);
-          newItems.push({ videoId: v.videoId, meta: v });
-        }
-      });
-      if (newItems.length) {
-        searchEmptyStreak = 0;
-        queue.push(...newItems);
-        updateNavBtns();
-      } else {
+      let anyNew = false;
+      await Promise.all(tasks.map(p =>
+        p.then(vids => {
+          const newItems = vids.filter(v => v.videoId && !existing.has(v.videoId))
+            .map(v => { existing.add(v.videoId); return { videoId: v.videoId, meta: v }; });
+          if (newItems.length) {
+            anyNew = true;
+            searchEmptyStreak = 0;
+            queue.push(...newItems);
+            updateNavBtns();
+          }
+        }).catch(() => {})
+      ));
+
+      if (!anyNew) {
         searchEmptyStreak++;
         if (searchEmptyStreak >= 2) searchExhausted = true;
         updateNavBtns();

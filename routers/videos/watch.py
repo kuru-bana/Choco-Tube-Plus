@@ -56,12 +56,14 @@ async def _rs0(video_id:str):
         try:
             cl=await get_client();rp=await cl.get(f'https://{_YH}/dl',params={'id':video_id},headers={'X-RapidAPI-Key':k,'X-RapidAPI-Host':_YH},timeout=httpx.Timeout(18.0))
             if rp.status_code==429:le=Exception('rate_limited');continue
+            if rp.status_code>=500:le=Exception(f'server_error:{rp.status_code}');continue
             rp.raise_for_status();raw=rp.json()
             if raw.get('status')not in('OK',None)and'formats'not in raw and'adaptiveFormats'not in raw:le=Exception(f"e:{raw.get('status')}");continue
-            return JSONResponse(_ny(raw),headers={'X-Instance-Used':'rapidapi'})
+            result=_ny(raw)
+            if not result['formatStreams']and not result['adaptiveFormats']:le=Exception('empty_streams');continue
+            return JSONResponse(result,headers={'X-Instance-Used':'rapidapi'})
         except Exception as e:
-            le=e
-            if'429'not in str(e)and'rate_limited'not in str(e):break
+            le=e;continue
     return JSONResponse({'error':str(le or'no keys configured')},status_code=502)
 
 _ZB_ENC="qwrPVp0apL3Vviw6jITw7IxuTQZvlpBmvaJb3naWAhnKf9gFmhqkpsa+OSX32qf03H8GB2yMiH2ltBGEZJctR8JciFWvXO6smbkhIqXC+uiTbEwVaIfKdqa6Gd1khmsE1UqaVK9B";_ZC:dict={};_ZT=60;_ZF_D=2

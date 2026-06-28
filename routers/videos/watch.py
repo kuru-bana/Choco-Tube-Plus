@@ -107,6 +107,62 @@ async def _zs1(video_id:str):
     return JSONResponse(list(_res))
 
 
+_SB_ENC="lXdNUHXlzC/W4WYaQXXZSxkcSHmCM5u+OqdAzBu4GA==";_SC:dict={};_ST=60
+_s_lock=asyncio.Lock();_s_ready=False;_SB:str=""
+async def _r0s()->None:
+    global _SB,_s_ready
+    if _s_ready:return
+    async with _s_lock:
+        if _s_ready:return
+        _n=_APP_NAME
+        if _n!="choco-tube-plus":return
+        _dk=_hl.sha256(_n.encode()).digest();_SB=_decode(_SB_ENC,_dk);_s_ready=True
+def _sc(vc:str)->str:
+    vc=(vc or'').lower()
+    if vc.startswith('avc1')or vc=='h264':return'H.264'
+    if vc.startswith('vp9')or vc.startswith('vp09'):return'VP9'
+    if vc.startswith('av01')or vc=='av1':return'AV1'
+    if vc.startswith('mp4a'):return'AAC'
+    if vc=='opus':return'Opus'
+    return vc
+def _sny(raw:dict)->dict:
+    fs=[];af=[]
+    _qo={'144p':7,'240p':6,'360p':5,'480p':4,'720p':3,'1080p':2,'1440p':1,'2160p':0}
+    for s in raw.get('streams',{}).get('muxed',[]):
+        url=s.get('streamUrl','');note=s.get('formatNote','');ext=s.get('ext','mp4')
+        w,h=s.get('width',0),s.get('height',0);fps=s.get('fps',25)
+        vc=_sc(s.get('vcodec',''));sz=f'{w}x{h}'if w and h else''
+        if not url:continue
+        fs.append({'url':url,'itag':str(s.get('formatId','')),'type':f'video/{ext}','quality':note,'qualityLabel':note,'fps':fps,'size':sz,'bitrate':str(int(s.get('tbr',0) or 0)),'container':ext,'encoding':vc})
+    for s in raw.get('streams',{}).get('videoOnly',[]):
+        url=s.get('streamUrl','');note=s.get('formatNote','');ext=s.get('ext','mp4')
+        w,h=s.get('width',0),s.get('height',0);fps=s.get('fps',30)
+        vc=_sc(s.get('vcodec',''));sz=f'{w}x{h}'if w and h else''
+        if not url:continue
+        af.append({'url':url,'itag':str(s.get('formatId','')),'type':f'video/{ext}','quality':note,'qualityLabel':note,'fps':fps,'size':sz,'bitrate':str(int(s.get('tbr',0) or 0)),'container':ext,'encoding':vc})
+    for s in raw.get('streams',{}).get('audioOnly',[]):
+        url=s.get('streamUrl','');ext=s.get('ext','webm')
+        ac=_sc(s.get('acodec',''));note=s.get('formatNote','')
+        if not url:continue
+        af.append({'url':url,'itag':str(s.get('formatId','')),'type':f'audio/{ext}','quality':note,'qualityLabel':'','fps':0,'size':'','bitrate':str(int(s.get('tbr',0) or 0)),'container':ext,'encoding':ac})
+    fs.sort(key=lambda f:_qo.get(f.get('quality',''),9))
+    return{'formatStreams':fs,'adaptiveFormats':af,'_source':'sia'}
+@router.get("/api/siastream/{video_id}")
+async def _ss0(video_id:str):
+    await _r0s()
+    if not _s_ready:return JSONResponse({'error':'unavailable'},status_code=503)
+    _ck=f"sia:{video_id}";_now=time.time();_hit=_SC.get(_ck)
+    if _hit and _hit["e"]>_now:return JSONResponse(_hit["d"])
+    try:
+        async with httpx.AsyncClient(timeout=httpx.Timeout(18.0),follow_redirects=True) as _cl:
+            _rp=await _cl.get(_SB+video_id,headers={"User-Agent":_ZUA})
+        if not _rp.is_success:return JSONResponse({'error':f'e{_rp.status_code}'},status_code=502)
+        _raw=_rp.json();_res=_sny(_raw)
+        if not _res['formatStreams']and not _res['adaptiveFormats']:return JSONResponse({'error':'empty_streams'},status_code=502)
+        _SC[_ck]={"d":_res,"e":_now+_ST};return JSONResponse(_res,headers={'X-Instance-Used':'sia'})
+    except Exception as _e:return JSONResponse({'error':str(_e)},status_code=500)
+
+
 # ── Edu params ────────────────────────────────────────────────────────────────
 
 _EDU_PARAMS_URLS = [

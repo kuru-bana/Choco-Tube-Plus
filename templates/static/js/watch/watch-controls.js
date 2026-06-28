@@ -2,6 +2,7 @@ function instanceHostname(invInstance) {
   if (!invInstance) return '';
   if (invInstance === 'rapidapi') return 'RapidAPI';
   if (invInstance === 'zernio') return 'Zernio';
+  if (invInstance === 'sia') return 'Sia';
   if (invInstance === 'piped') return 'Piped';
   try { return new URL(invInstance).hostname; } catch { return invInstance; }
 }
@@ -28,13 +29,15 @@ async function fetchBestStream(videoId, excludeParam) {
   if (src === 'invidious') return fetchStream(invPath);
   if (src === 'rapidapi')  return fetchRapidStream(videoId);
   if (src === 'zernio')    return fetchZernioStreamData(videoId);
+  if (src === 'sia')       return fetchSiaStream(videoId);
 
-  // auto: Invidious・RapidAPI・Zernio の3つを並列で競争させ最速を使う
+  // auto: Invidious・RapidAPI・Zernio・Sia の4つを並列で競争させ最速を使う
   const invPromise    = fetchStream(invPath);
   const rapidPromise  = fetchRapidStream(videoId);
   const zernioPromise = fetchZernioStreamData(videoId);
+  const siaPromise    = fetchSiaStream(videoId);
 
-  const winner = await Promise.any([zernioPromise, invPromise, rapidPromise])
+  const winner = await Promise.any([zernioPromise, siaPromise, invPromise, rapidPromise])
     .catch(() => fetchStream(invPath));
 
   // Zernio が勝った場合：HQ・音声のみ用に Inv/Rapid の結果をバックグラウンドで待つ

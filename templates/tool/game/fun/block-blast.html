@@ -71,9 +71,9 @@ function progressHandler(p) {
   document.getElementById('pct').textContent = pct + '%';
 }
 
-loadWithFallback('/block-blast/Build/game.loader.js',
+loadWithFallback('/FreezeNova/block-blast/Build/game.loader.js',
   function(base) {
-    var B = base + '/block-blast/Build';
+    var B = base + '/FreezeNova/block-blast/Build';
     config.dataUrl      = B + '/game.data.unityweb';
     config.frameworkUrl = B + '/game.framework.js.unityweb';
     config.codeUrl      = B + '/game.wasm.unityweb';

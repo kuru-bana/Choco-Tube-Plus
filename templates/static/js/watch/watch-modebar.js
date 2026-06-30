@@ -162,7 +162,7 @@ function initModeBar(videoId) {
     savePreferredMode('hq');
     const ct = getEstimatedCurrentTime();
     stopIframeTracking();
-    lastStreamSrc = (streamOnlyMode === 'audio' && lastNormalStreamSrc) ? lastNormalStreamSrc : player.src;
+    lastStreamSrc = (streamOnlyMode === 'audio' && lastNormalStreamSrc) ? lastNormalStreamSrc : (getVideoSrc() || player.src);
     if (streamOnlyMode !== 'normal') {
       streamOnlyMode = 'normal';
       const _pw = document.getElementById('playerWrap');
@@ -661,7 +661,7 @@ function switchStreamOnlyMode(mode) {
     player.muted = volState.muted;
     if (wasPlaying) player.play().catch(() => {});
     // Mark the matching quality button active
-    const curSrc = player.src;
+    const curSrc = getVideoSrc() || player.src;
     document.querySelectorAll('#qualityBtns .quality-btn:not(.quality-btn-track)').forEach(b => {
       b.classList.toggle('active', b.dataset.url === curSrc);
     });
@@ -676,7 +676,7 @@ function switchStreamOnlyMode(mode) {
 
   } else if (mode === 'audio') {
     if (!streamBestAudioUrl) return;
-    if (prevMode !== 'audio') lastNormalStreamSrc = player.src;
+    if (prevMode !== 'audio') lastNormalStreamSrc = getVideoSrc() || player.src;
     // Set audio poster: try maxresdefault → hqdefault → player poster fallback
     playerWrap.style.setProperty('--audio-poster', `url(${player.poster})`);
     if (currentVideoId) {

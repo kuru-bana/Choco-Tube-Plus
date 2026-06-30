@@ -1,0 +1,461 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Gn-math ゲームポータル</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #0f1117;
+      --bg2: #1a1d27;
+      --bg3: #22263a;
+      --border: rgba(99,115,150,0.2);
+      --accent: #fbbf24;
+      --accent-dim: rgba(251,191,36,0.15);
+      --text: #e2e8f0;
+      --text2: #8892a4;
+      --red: #ef4444;
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: system-ui, -apple-system, 'Segoe UI', sans-serif;
+      min-height: 100vh;
+    }
+
+    /* ── 強制的に display:none を確保 ── */
+    .gp-hidden { display: none !important; }
+
+    .site-header {
+      background: var(--bg2);
+      border-bottom: 1px solid var(--border);
+      padding: 16px 24px;
+    }
+    .site-logo {
+      font-size: 1.25rem;
+      font-weight: 700;
+      color: var(--accent);
+      letter-spacing: .03em;
+    }
+    .site-sub {
+      font-size: .8rem;
+      color: var(--text2);
+      margin-top: 3px;
+    }
+
+    .main {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 32px 20px 80px;
+    }
+
+    .section-title {
+      font-size: .9rem;
+      font-weight: 600;
+      color: var(--text2);
+      text-transform: uppercase;
+      letter-spacing: .08em;
+      margin-bottom: 20px;
+    }
+
+    /* status */
+    .status {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 60px 0;
+      justify-content: center;
+      color: var(--text2);
+      font-size: .9rem;
+    }
+    .spinner {
+      width: 22px; height: 22px;
+      border-radius: 50%;
+      border: 2px solid rgba(251,191,36,.18);
+      border-top-color: var(--accent);
+      animation: spin .7s linear infinite;
+      flex-shrink: 0;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    .error-box {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 12px;
+      padding: 60px 0;
+      color: var(--text2);
+      text-align: center;
+    }
+    .error-box svg { color: var(--red); }
+    .retry-btn {
+      margin-top: 4px;
+      padding: 8px 20px;
+      background: var(--bg3);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      color: var(--text);
+      font-size: .85rem;
+      cursor: pointer;
+      transition: border-color .15s, background .15s;
+    }
+    .retry-btn:hover {
+      border-color: var(--accent);
+      background: var(--accent-dim);
+    }
+
+    /* grid */
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(170px, 1fr));
+      gap: 16px;
+    }
+
+    .card {
+      background: var(--bg2);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      overflow: hidden;
+      cursor: pointer;
+      transition: transform .18s, box-shadow .18s, border-color .18s;
+    }
+    .card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 10px 32px rgba(0,0,0,.45);
+      border-color: rgba(251,191,36,.4);
+    }
+    .card:hover .card-play { opacity: 1; }
+
+    .card-thumb-wrap {
+      position: relative;
+      width: 100%;
+      aspect-ratio: 16/10;
+      background: var(--bg3);
+      overflow: hidden;
+    }
+    .card-thumb {
+      width: 100%; height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+    .card-thumb-placeholder {
+      width: 100%; height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 2.2rem;
+    }
+    .card-play {
+      position: absolute;
+      inset: 0;
+      background: rgba(0,0,0,.52);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      opacity: 0;
+      transition: opacity .18s;
+    }
+    .card-play svg { color: #fff; filter: drop-shadow(0 2px 8px rgba(0,0,0,.7)); }
+    .card-body { padding: 10px 12px 12px; }
+    .card-name {
+      font-size: .82rem;
+      font-weight: 600;
+      color: var(--text);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    /* overlay */
+    .overlay {
+      position: fixed;
+      inset: 0;
+      z-index: 9000;
+      display: flex;
+      flex-direction: column;
+      background: #000;
+    }
+
+    .overlay-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 10px 16px;
+      background: var(--bg2);
+      border-bottom: 1px solid var(--border);
+      flex-shrink: 0;
+      min-height: 48px;
+      gap: 12px;
+    }
+    .overlay-title {
+      font-size: .9rem;
+      font-weight: 600;
+      color: var(--text);
+      flex: 1;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .overlay-actions { display: flex; gap: 8px; flex-shrink: 0; }
+    .overlay-btn {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      border-radius: 8px;
+      padding: 6px 14px;
+      font-size: .82rem;
+      cursor: pointer;
+      transition: background .15s;
+      border: 1px solid;
+      white-space: nowrap;
+    }
+    .btn-reload {
+      background: rgba(251,191,36,.1);
+      border-color: rgba(251,191,36,.3);
+      color: var(--accent);
+    }
+    .btn-reload:hover { background: rgba(251,191,36,.2); }
+    .btn-close {
+      background: rgba(239,68,68,.1);
+      border-color: rgba(239,68,68,.3);
+      color: var(--red);
+    }
+    .btn-close:hover { background: rgba(239,68,68,.2); }
+
+    .game-loading {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 16px;
+      background: #000;
+      color: var(--text2);
+      font-size: .9rem;
+      z-index: 1;
+    }
+
+    .game-wrap {
+      flex: 1;
+      position: relative;
+      overflow: hidden;
+    }
+    .game-frame {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      border: none;
+    }
+
+    @media (max-width: 480px) {
+      .grid { grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 12px; }
+    }
+  </style>
+</head>
+<body>
+
+<header class="site-header">
+  <div class="site-logo">🎮 Gn-math Games</div>
+  <div class="site-sub">数学系ミニゲームコレクション — カードをクリックしてプレイ</div>
+</header>
+
+<main class="main">
+  <div class="section-title">ゲーム一覧</div>
+
+  <div id="gp-status" class="status">
+    <div class="spinner"></div>
+    <span>読み込み中...</span>
+  </div>
+
+  <div id="gp-error" class="error-box gp-hidden">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="36" height="36">
+      <circle cx="12" cy="12" r="10"/>
+      <line x1="12" y1="8" x2="12" y2="12"/>
+      <line x1="12" y1="16" x2="12.01" y2="16"/>
+    </svg>
+    <span id="gp-error-msg">読み込みに失敗しました</span>
+    <button class="retry-btn" id="gp-retry">再試行</button>
+  </div>
+
+  <div id="gp-grid" class="grid gp-hidden"></div>
+</main>
+
+<!-- ゲームオーバーレイ -->
+<div id="gp-overlay" class="overlay gp-hidden">
+  <div class="overlay-bar">
+    <span id="gp-overlay-title" class="overlay-title"></span>
+    <div class="overlay-actions">
+      <button class="overlay-btn btn-reload" id="gp-reload">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" width="15" height="15"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg>
+        再読み込み
+      </button>
+      <button class="overlay-btn btn-close" id="gp-close">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" width="15" height="15"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        閉じる
+      </button>
+    </div>
+  </div>
+  <div class="game-wrap">
+    <div id="gp-game-loading" class="game-loading">
+      <div class="spinner"></div>
+      <span id="gp-game-loading-msg">ゲームを読み込み中...</span>
+    </div>
+    <iframe id="gp-frame" class="game-frame gp-hidden"></iframe>
+  </div>
+</div>
+
+<script>
+(function () {
+  var RAW_HTML = 'https://raw.githubusercontent.com/gn-math/html/refs/heads/main/';
+  var API_HTML = 'https://api.github.com/repos/gn-math/html/contents/';
+  var API_COV  = 'https://api.github.com/repos/gn-math/covers/contents/';
+
+  var $status      = document.getElementById('gp-status');
+  var $error       = document.getElementById('gp-error');
+  var $errorMsg    = document.getElementById('gp-error-msg');
+  var $grid        = document.getElementById('gp-grid');
+  var $overlay     = document.getElementById('gp-overlay');
+  var $frame       = document.getElementById('gp-frame');
+  var $title       = document.getElementById('gp-overlay-title');
+  var $gameLoading = document.getElementById('gp-game-loading');
+  var $gameLoadMsg = document.getElementById('gp-game-loading-msg');
+  var $close       = document.getElementById('gp-close');
+  var $reload      = document.getElementById('gp-reload');
+  var $retry       = document.getElementById('gp-retry');
+
+  var currentStem = null;
+
+  function show(el) { el.classList.remove('gp-hidden'); }
+  function hide(el) { el.classList.add('gp-hidden'); }
+
+  // ── ゲームを開く：RAWからHTMLをfetchしてsrcdocに流し込む ──
+  function openGame(stem) {
+    currentStem = stem;
+    $title.textContent = stem;
+    hide($frame);
+    $gameLoadMsg.textContent = 'ゲームを読み込み中...';
+    show($gameLoading);
+    show($overlay);
+    document.body.style.overflow = 'hidden';
+
+    var url = RAW_HTML + encodeURIComponent(stem) + '.html';
+    fetch(url)
+      .then(function (res) {
+        if (!res.ok) throw new Error('HTTP ' + res.status);
+        return res.text();
+      })
+      .then(function (html) {
+        $frame.srcdoc = html;
+        hide($gameLoading);
+        show($frame);
+      })
+      .catch(function (err) {
+        $gameLoadMsg.textContent = '読み込み失敗: ' + err.message;
+      });
+  }
+
+  function closeGame() {
+    hide($overlay);
+    $frame.srcdoc = '';
+    hide($frame);
+    document.body.style.overflow = '';
+    currentStem = null;
+  }
+
+  $close.addEventListener('click', closeGame);
+  $reload.addEventListener('click', function () {
+    if (currentStem) openGame(currentStem);
+  });
+  document.addEventListener('keydown', function (e) {
+    if (e.key === 'Escape') closeGame();
+  });
+
+  function numOf(name) {
+    var m = name.match(/^(\d+)/);
+    return m ? parseInt(m[1], 10) : Infinity;
+  }
+
+  function findCover(stem, coverMap) {
+    if (coverMap[stem]) return coverMap[stem];
+    var m = stem.match(/^(\d+)/);
+    if (m && coverMap[m[1]]) return coverMap[m[1]];
+    return null;
+  }
+
+  function makeCard(stem, coverUrl) {
+    var card = document.createElement('div');
+    card.className = 'card';
+    var thumbHtml = coverUrl
+      ? '<img class="card-thumb" src="' + coverUrl + '" alt="' + stem + '" loading="lazy" decoding="async">'
+      : '<div class="card-thumb-placeholder">🎮</div>';
+    card.innerHTML =
+      '<div class="card-thumb-wrap">' +
+        thumbHtml +
+        '<div class="card-play"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" width="42" height="42"><polygon points="5 3 19 12 5 21 5 3"/></svg></div>' +
+      '</div>' +
+      '<div class="card-body"><div class="card-name">' + stem + '</div></div>';
+    card.addEventListener('click', function () { openGame(stem); });
+    return card;
+  }
+
+  function loadGames() {
+    hide($error);
+    hide($grid);
+    show($status);
+
+    var gh = { headers: { Accept: 'application/vnd.github.v3+json' } };
+
+    Promise.all([
+      fetch(API_HTML, gh),
+      fetch(API_COV, gh)
+    ]).then(function (results) {
+      var htmlRes = results[0];
+      var covRes  = results[1];
+      if (!htmlRes.ok) throw new Error('GitHub API: ' + htmlRes.status);
+
+      return Promise.all([
+        htmlRes.json(),
+        covRes.ok ? covRes.json() : Promise.resolve([])
+      ]);
+    }).then(function (data) {
+      var htmlFiles = data[0];
+      var covFiles  = Array.isArray(data[1]) ? data[1] : [];
+
+      var stems = htmlFiles
+        .filter(function (f) { return f.type === 'file' && /\.html$/i.test(f.name); })
+        .map(function (f) { return f.name.replace(/\.html$/i, ''); })
+        .sort(function (a, b) { return numOf(a) - numOf(b) || a.localeCompare(b); });
+
+      if (stems.length === 0) throw new Error('ゲームが見つかりませんでした');
+
+      var coverMap = {};
+      covFiles
+        .filter(function (f) { return f.type === 'file' && /\.png$/i.test(f.name); })
+        .forEach(function (f) { coverMap[f.name.replace(/\.png$/i, '')] = f.download_url; });
+
+      hide($status);
+      $grid.innerHTML = '';
+      stems.forEach(function (stem) {
+        $grid.appendChild(makeCard(stem, findCover(stem, coverMap)));
+      });
+      show($grid);
+
+    }).catch(function (err) {
+      hide($status);
+      $errorMsg.textContent = err.message || '読み込みに失敗しました';
+      show($error);
+    });
+  }
+
+  $retry.addEventListener('click', loadGames);
+  loadGames();
+})();
+</script>
+
+</body>
+</html>

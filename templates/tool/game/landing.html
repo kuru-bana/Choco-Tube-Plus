@@ -1,0 +1,165 @@
+{% extends "base.html" %}
+{% block title %}ゲーム — Choco-tube-plus{% endblock %}
+{% block body_class %}game-landing-page{% endblock %}
+{% block content %}
+<main class="gl-main">
+  <div class="gl-container">
+    <div class="gl-header">
+      <a href="/tool" class="gl-back">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" width="16" height="16"><polyline points="15 18 9 12 15 6"/></svg>
+        ツールに戻る
+      </a>
+      <h1 class="gl-title">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="28" height="28"><rect x="2" y="6" width="20" height="12" rx="3"/><path d="M6 12h4m-2-2v4M15 11h.01M17 13h.01"/></svg>
+        ゲーム
+      </h1>
+      <p class="gl-desc">プレイするカテゴリを選んでください</p>
+    </div>
+
+    <div class="gl-cards">
+
+      <!-- CloudMoon -->
+      <a href="/tool/game/cloudmoon" class="gl-card gl-card--cloudmoon">
+        <div class="gl-card-icon">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" width="48" height="48"><path d="M12 3a6 6 0 0 0-5.996 6.24A5 5 0 0 0 7 19h10a5 5 0 0 0 .996-9.76A6 6 0 0 0 12 3z"/><path d="M9 19v2M12 19v3M15 19v2"/></svg>
+        </div>
+        <div class="gl-card-body">
+          <span class="gl-card-name">CloudMoon</span>
+          <span class="gl-card-sub">All-in-One ゲームポータル</span>
+        </div>
+        <div class="gl-card-arrow">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" width="20" height="20"><polyline points="9 18 15 12 9 6"/></svg>
+        </div>
+      </a>
+
+      <!-- Ge-math (準備中) -->
+      <div class="gl-card gl-card--gemath gl-card--disabled">
+        <div class="gl-card-icon">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" width="48" height="48"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
+        </div>
+        <div class="gl-card-body">
+          <span class="gl-card-name">Ge-math <span class="gl-badge-soon">準備中</span></span>
+          <span class="gl-card-sub">数学系ゲーム — もうしばらくお待ちください</span>
+        </div>
+        <div class="gl-card-arrow gl-card-arrow--dim">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" width="20" height="20"><polyline points="9 18 15 12 9 6"/></svg>
+        </div>
+      </div>
+
+      <!-- 他ゲーム -->
+      <a href="/tool/game/fun" class="gl-card gl-card--fun">
+        <div class="gl-card-icon">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" width="48" height="48"><rect x="2" y="6" width="20" height="12" rx="3"/><path d="M6 12h4m-2-2v4M15 11h.01M17 13h.01"/></svg>
+        </div>
+        <div class="gl-card-body">
+          <span class="gl-card-name">他ゲーム</span>
+          <span class="gl-card-sub">ブラウザで遊べるゲームをまとめて紹介</span>
+        </div>
+        <div class="gl-card-arrow">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" width="20" height="20"><polyline points="9 18 15 12 9 6"/></svg>
+        </div>
+      </a>
+
+    </div>
+  </div>
+</main>
+
+<style>
+.gl-main { padding: 24px 16px 64px; min-height: 60vh; }
+.gl-container { max-width: 680px; margin: 0 auto; }
+
+.gl-header { margin-bottom: 36px; }
+.gl-back {
+  display: inline-flex; align-items: center; gap: 5px;
+  font-size: .83rem; color: var(--text-secondary); text-decoration: none;
+  margin-bottom: 16px; transition: color .15s;
+}
+.gl-back:hover { color: var(--text-primary); }
+.gl-title {
+  display: flex; align-items: center; gap: 10px;
+  font-size: 1.6rem; font-weight: 700; margin: 0 0 8px;
+  color: var(--text-primary);
+}
+.gl-desc { color: var(--text-secondary); font-size: .9rem; margin: 0; }
+
+.gl-cards { display: flex; flex-direction: column; gap: 16px; }
+
+.gl-card {
+  display: flex; align-items: center; gap: 20px;
+  background: var(--bg-secondary);
+  border: 1px solid var(--card-border, rgba(99,115,150,0.2));
+  border-radius: 16px;
+  padding: 22px 24px;
+  text-decoration: none; color: inherit;
+  transition: transform .18s, box-shadow .18s, border-color .18s;
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+}
+.gl-card::before {
+  content: '';
+  position: absolute; inset: 0;
+  opacity: 0; transition: opacity .18s;
+  pointer-events: none;
+}
+.gl-card:not(.gl-card--disabled):hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 28px rgba(0,0,0,.25);
+}
+.gl-card--disabled { cursor: default; opacity: .55; }
+
+.gl-card--cloudmoon { border-color: rgba(139,92,246,0.3); }
+.gl-card--cloudmoon::before { background: radial-gradient(ellipse at left, rgba(139,92,246,0.08) 0%, transparent 70%); }
+.gl-card--cloudmoon:hover { border-color: rgba(139,92,246,0.55); }
+.gl-card--cloudmoon:hover::before { opacity: 1; }
+.gl-card--cloudmoon .gl-card-icon { color: #a78bfa; }
+
+.gl-card--gemath { border-color: rgba(251,191,36,0.25); }
+.gl-card--gemath .gl-card-icon { color: #fbbf24; }
+
+.gl-card--fun { border-color: rgba(210,105,30,0.3); }
+.gl-card--fun::before { background: radial-gradient(ellipse at left, rgba(210,105,30,0.08) 0%, transparent 70%); }
+.gl-card--fun:hover { border-color: rgba(210,105,30,0.55); }
+.gl-card--fun:hover::before { opacity: 1; }
+.gl-card--fun .gl-card-icon { color: var(--accent-secondary, #f4a460); }
+
+.gl-card-icon {
+  flex-shrink: 0;
+  width: 64px; height: 64px;
+  display: flex; align-items: center; justify-content: center;
+  background: rgba(255,255,255,0.04);
+  border-radius: 14px;
+}
+
+.gl-card-body {
+  flex: 1; display: flex; flex-direction: column; gap: 5px; min-width: 0;
+}
+.gl-card-name {
+  font-size: 1.15rem; font-weight: 700; color: var(--text-primary);
+  display: flex; align-items: center; gap: 8px;
+}
+.gl-card-sub { font-size: .83rem; color: var(--text-secondary); }
+
+.gl-badge-soon {
+  font-size: .62rem; font-weight: 600;
+  font-family: 'Share Tech Mono', monospace;
+  padding: 2px 8px; border-radius: 999px;
+  background: rgba(251,191,36,0.18);
+  color: #fbbf24;
+  border: 1px solid rgba(251,191,36,0.4);
+  vertical-align: middle;
+  letter-spacing: .05em;
+}
+
+.gl-card-arrow { flex-shrink: 0; color: var(--text-secondary); transition: transform .18s, color .18s; }
+.gl-card-arrow--dim { opacity: .35; }
+.gl-card:not(.gl-card--disabled):hover .gl-card-arrow { transform: translateX(3px); color: var(--text-primary); }
+
+@media (max-width: 500px) {
+  .gl-card { padding: 16px 18px; gap: 14px; }
+  .gl-card-icon { width: 52px; height: 52px; }
+  .gl-card-icon svg { width: 36px; height: 36px; }
+  .gl-card-name { font-size: 1rem; }
+}
+</style>
+{% endblock %}

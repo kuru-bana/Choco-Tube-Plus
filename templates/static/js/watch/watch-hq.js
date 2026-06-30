@@ -75,7 +75,7 @@ function applyHQStream(restoreTime, autoplay) {
   const shouldPlay = autoplay ?? !player.paused;
 
   player.muted = true;
-  player.src = videoUrl;
+  applyVideoSrc(player, videoUrl);
   audio.src = audioUrl;
   audio.volume = volState.vol;
   audio.muted = volState.muted;

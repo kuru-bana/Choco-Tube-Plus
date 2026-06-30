@@ -139,7 +139,7 @@ async function doStreamAlt(videoId, restoreTime = 0) {
       const bestFormat = setupQualities(formats);
       if (bestFormat) {
         lastNormalStreamSrc = bestFormat.url;
-        player.src = bestFormat.url;
+        applyVideoSrc(player, bestFormat.url);
         player.muted = volState.muted;
         const vcQualBtn2 = document.getElementById('vcQualBtn');
         if (vcQualBtn2) vcQualBtn2.textContent = bestFormat.qualityLabel || bestFormat.quality || '画質';

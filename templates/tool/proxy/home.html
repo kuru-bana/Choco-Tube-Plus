@@ -1,0 +1,307 @@
+{% extends "base.html" %}
+{% block title %}プロキシ一覧 — Choco-tube-plus{% endblock %}
+{% block body_class %}proxy-home-page{% endblock %}
+{% block content %}
+<main class="px-main">
+  <div class="px-container">
+
+    <!-- ヘッダー -->
+    <div class="px-header">
+      <a href="/tool" class="px-back">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" width="16" height="16"><polyline points="15 18 9 12 15 6"/></svg>
+        ツールに戻る
+      </a>
+      <h1 class="px-title">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="26" height="26"><circle cx="12" cy="12" r="10"/><path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20"/><path d="M2 12h20"/></svg>
+        プロキシ一覧
+      </h1>
+      <p class="px-desc">プロキシサービスを選択すると、GitHubから最新のインスタンス一覧を取得して表示します。</p>
+    </div>
+
+    <!-- サービス選択ボタン -->
+    <div class="px-service-grid">
+      <button class="px-service-card" data-service="daydreamx">
+        <img src="/photo/proxy/daydreamx.png" class="px-service-thumb" alt="DayDreamX">
+        <span class="px-service-label">DayDreamX</span>
+      </button>
+      <button class="px-service-card" data-service="dogeweb">
+        <img src="/photo/proxy/degeweb.png" class="px-service-thumb" alt="DogeWeb">
+        <span class="px-service-label">DogeWeb</span>
+      </button>
+      <button class="px-service-card" data-service="galaxy">
+        <img src="/photo/proxy/galaxy.png" class="px-service-thumb" alt="Galaxy">
+        <span class="px-service-label">Galaxy</span>
+      </button>
+      <button class="px-service-card" data-service="interstellar">
+        <img src="/photo/proxy/Interstellar.jpg" class="px-service-thumb" alt="Interstellar">
+        <span class="px-service-label">Interstellar</span>
+      </button>
+      <button class="px-service-card" data-service="lunar">
+        <img src="/photo/proxy/lunar.png" class="px-service-thumb" alt="Lunar">
+        <span class="px-service-label">Lunar</span>
+      </button>
+      <button class="px-service-card" data-service="petezah">
+        <img src="/photo/proxy/petezah.png" class="px-service-thumb" alt="Petezah">
+        <span class="px-service-label">Petezah</span>
+      </button>
+      <button class="px-service-card" data-service="rammer">
+        <img src="/photo/proxy/rammer.png" class="px-service-thumb" alt="Rammer">
+        <span class="px-service-label">Rammer</span>
+      </button>
+      <button class="px-service-card" data-service="re:vault">
+        <img src="/photo/proxy/re:vault.png" class="px-service-thumb" alt="Re:vault">
+        <span class="px-service-label">Re:vault</span>
+      </button>
+      <button class="px-service-card" data-service="shadow">
+        <img src="/photo/proxy/shadow.png" class="px-service-thumb" alt="Shadow">
+        <span class="px-service-label">Shadow</span>
+      </button>
+      <button class="px-service-card" data-service="solocentral">
+        <img src="/photo/proxy/solocentral.png" class="px-service-thumb" alt="SoloCentral">
+        <span class="px-service-label">SoloCentral</span>
+      </button>
+      <button class="px-service-card" data-service="space">
+        <img src="/photo/proxy/space.png" class="px-service-thumb" alt="Space">
+        <span class="px-service-label">Space</span>
+      </button>
+      <button class="px-service-card" data-service="utopia">
+        <img src="/photo/proxy/utopia.png" class="px-service-thumb" alt="Utopia">
+        <span class="px-service-label">Utopia</span>
+      </button>
+    </div>
+
+    <!-- リスト表示エリア -->
+    <div id="pxResult" class="px-result" hidden>
+      <div class="px-result-header">
+        <span id="pxResultTitle" class="px-result-title"></span>
+        <span id="pxStatus" class="px-status-text"></span>
+      </div>
+      <div id="pxList" class="px-list"></div>
+    </div>
+
+    <!-- 初期メッセージ -->
+    <div id="pxEmpty" class="px-empty-state">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="48" height="48"><circle cx="12" cy="12" r="10"/><path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20"/><path d="M2 12h20"/></svg>
+      <p>上のボタンからプロキシサービスを選択してください</p>
+    </div>
+
+  </div>
+</main>
+
+<style>
+/* ── レイアウト ── */
+.px-main { padding: 24px 16px 56px; }
+.px-container { max-width: 780px; margin: 0 auto; }
+
+/* ── ヘッダー ── */
+.px-header { margin-bottom: 28px; }
+.px-back {
+  display: inline-flex; align-items: center; gap: 5px;
+  font-size: .83rem; color: var(--text-secondary); text-decoration: none;
+  margin-bottom: 14px; transition: color .15s;
+}
+.px-back:hover { color: var(--text-primary); }
+.px-title {
+  display: flex; align-items: center; gap: 10px;
+  font-size: 1.45rem; font-weight: 700; margin: 0 0 7px;
+  color: var(--text-primary);
+}
+.px-desc { color: var(--text-secondary); font-size: .9rem; margin: 0; }
+
+/* ── サービスカードグリッド ── */
+.px-service-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 14px;
+  margin-bottom: 28px;
+}
+
+.px-service-card {
+  display: flex; flex-direction: column; align-items: center; gap: 10px;
+  background: var(--bg-secondary);
+  border: 1.5px solid var(--border-color, rgba(128,128,128,.2));
+  border-radius: 14px; padding: 16px 10px 14px;
+  cursor: pointer; color: inherit;
+  transition: background .15s, border-color .2s, transform .12s;
+}
+.px-service-card:hover { background: var(--bg-tertiary, var(--bg-secondary)); transform: translateY(-2px); }
+.px-service-card.active {
+  border-color: var(--accent-bright, #a78bfa);
+  background: rgba(124,58,237,.12);
+}
+
+.px-service-thumb {
+  width: 100%; aspect-ratio: 16/9;
+  border-radius: 8px; object-fit: cover;
+}
+.px-service-label { font-weight: 600; font-size: .9rem; text-align: center; }
+
+/* ── 結果エリア ── */
+.px-result { animation: fadeIn .2s ease; }
+@keyframes fadeIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+
+.px-result-header {
+  display: flex; align-items: center; justify-content: space-between;
+  flex-wrap: wrap; gap: 8px; margin-bottom: 12px;
+}
+.px-result-title { font-size: 1rem; font-weight: 700; color: var(--text-primary); }
+.px-status-text { font-size: .82rem; color: var(--text-secondary); }
+
+/* ── リスト ── */
+.px-list { display: flex; flex-direction: column; background: var(--bg-secondary); border: 1px solid var(--border-color, rgba(128,128,128,.2)); border-radius: 12px; overflow: hidden; }
+
+.px-item {
+  display: flex; align-items: center; gap: 12px;
+  padding: 11px 16px;
+  border-bottom: 1px solid rgba(128,128,128,.1);
+  transition: background .15s;
+}
+.px-item:last-child { border-bottom: none; }
+.px-item:hover { background: rgba(124,58,237,.05); }
+
+.px-num {
+  font-size: .78rem; color: var(--text-secondary);
+  min-width: 22px; text-align: right; flex-shrink: 0;
+}
+.px-item-url {
+  flex: 1; min-width: 0; font-size: .88rem;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.px-item-url a { color: var(--text-primary); text-decoration: none; transition: color .15s; }
+.px-item-url a:hover { color: var(--accent-bright, #a78bfa); text-decoration: underline; }
+
+.px-open-btn {
+  font-size: .75rem; font-weight: 600; flex-shrink: 0;
+  padding: 3px 10px; border-radius: 6px;
+  background: rgba(124,58,237,.15); color: var(--accent-bright, #a78bfa);
+  border: 1px solid rgba(124,58,237,.3); text-decoration: none;
+  transition: background .15s;
+}
+.px-open-btn:hover { background: rgba(124,58,237,.28); }
+
+/* ── スケルトン ── */
+.px-skeleton {
+  height: 46px; margin: 6px 12px; border-radius: 8px;
+  background: linear-gradient(90deg, var(--bg-tertiary, rgba(128,128,128,.1)) 25%, var(--bg-secondary) 50%, var(--bg-tertiary, rgba(128,128,128,.1)) 75%);
+  background-size: 1200px 100%;
+  animation: shimmer 1.4s ease-in-out infinite;
+}
+@keyframes shimmer { 0%{background-position:-1200px 0} 100%{background-position:1200px 0} }
+
+/* ── 空状態 ── */
+.px-empty-state {
+  display: flex; flex-direction: column; align-items: center; gap: 14px;
+  padding: 60px 20px; color: var(--text-secondary); text-align: center;
+}
+.px-empty-state svg { opacity: .35; }
+.px-empty-state p { font-size: .95rem; margin: 0; }
+
+.px-error {
+  padding: 40px 20px; text-align: center;
+  color: var(--text-secondary); font-size: .9rem;
+}
+
+@media (max-width: 540px) {
+  .px-result-controls { flex-direction: column; align-items: flex-start; }
+  .px-item { gap: 8px; }
+  .px-item-url { font-size: .82rem; }
+}
+</style>
+
+<script>
+(function () {
+  const BASE = 'https://raw.githubusercontent.com/kuru-bana/Link-list/main/proxy/';
+  const GITHUB_URLS = {
+    daydreamx:   BASE + 'daydreamx.json',
+    dogeweb:     BASE + 'dogeweb.json',
+    galaxy:      BASE + 'galaxy.json',
+    interstellar:BASE + 'interstellar.json',
+    lunar:       BASE + 'lunar.json',
+    petezah:     BASE + 'petezah.json',
+    rammer:      BASE + 'rammer.json',
+    're:vault':  BASE + 're:vault.json',
+    shadow:      BASE + 'shadow.json',
+    solocentral: BASE + 'solocentral.json',
+    space:       BASE + 'space.json',
+    utopia:      BASE + 'utopia.json',
+  };
+
+  const resultEl  = document.getElementById('pxResult');
+  const emptyEl   = document.getElementById('pxEmpty');
+  const listEl    = document.getElementById('pxList');
+  const statusEl  = document.getElementById('pxStatus');
+  const titleEl   = document.getElementById('pxResultTitle');
+
+  let allItems      = [];
+  let activeService = null;
+
+  // ── サービスカード ──
+  document.querySelectorAll('.px-service-card').forEach(btn => {
+    btn.addEventListener('click', async () => {
+      const service = btn.dataset.service;
+      if (service === activeService) return;
+      document.querySelectorAll('.px-service-card').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      activeService = service;
+      await loadService(service, btn.querySelector('.px-service-label').textContent);
+    });
+  });
+
+  async function loadService(service, label) {
+    emptyEl.hidden = true;
+    resultEl.hidden = false;
+    titleEl.textContent = `${label} のリンク一覧`;
+    statusEl.textContent = '読み込み中...';
+    allItems = [];
+
+    // スケルトン表示
+    listEl.innerHTML = '';
+    for (let i = 0; i < 4; i++) {
+      const sk = document.createElement('div');
+      sk.className = 'px-skeleton';
+      listEl.appendChild(sk);
+    }
+
+    try {
+      const res  = await fetch(GITHUB_URLS[service]);
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      const data = await res.json();
+      allItems = Array.isArray(data)
+        ? data.map(i => typeof i === 'string' ? i : (i.url || i.uri || '')).filter(Boolean)
+        : [];
+    } catch (e) {
+      listEl.innerHTML = `<div class="px-error">⚠️ データの取得に失敗しました: ${e.message}</div>`;
+      statusEl.textContent = 'エラー';
+      return;
+    }
+
+    statusEl.textContent = `${allItems.length}件`;
+    renderList();
+  }
+
+  function renderList() {
+    listEl.innerHTML = '';
+    if (!allItems.length) {
+      listEl.innerHTML = `<div class="px-error">まだリンクが登録されていません</div>`;
+      return;
+    }
+    allItems.forEach((url, i) => {
+      const el = document.createElement('div');
+      el.className = 'px-item';
+      el.innerHTML = `
+        <span class="px-num">${i + 1}</span>
+        <span class="px-item-url">
+          <a href="${escHtml(url)}" target="_blank" rel="noopener noreferrer">${escHtml(url)}</a>
+        </span>
+        <a href="${escHtml(url)}" target="_blank" rel="noopener noreferrer" class="px-open-btn">開く</a>
+      `;
+      listEl.appendChild(el);
+    });
+  }
+
+  function escHtml(str) {
+    return String(str).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+  }
+})();
+</script>
+{% endblock %}

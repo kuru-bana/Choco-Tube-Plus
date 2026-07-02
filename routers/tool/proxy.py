@@ -39,3 +39,17 @@ async def proxy_detail(request: Request, slug: str):
         "service": service,
         "gh_url": gh_url,
     })
+
+
+@router.get("/tool/proxy/{slug}/embed")
+async def proxy_embed(request: Request, slug: str, u: str = ""):
+    service = SERVICES.get(slug)
+    if not service:
+        return RedirectResponse(url="/tool/proxy")
+    gh_url = GH_BASE + service["gh"] + ".json"
+    return templates.TemplateResponse(request, "tool/proxy/embed.html", {
+        "slug": slug,
+        "service": service,
+        "gh_url": gh_url,
+        "initial_url": u,
+    })

@@ -16,6 +16,7 @@ from routers.videos import watch, channel, shorts, search, download
 from routers.tool import youtube as tool_youtube
 from routers.tool import game as tool_game
 from routers.tool import programing as tool_programing
+from routers.tool import proxy as tool_proxy
 
 AUTH_COOKIE_NAME = "choco_auth"
 AUTH_COOKIE_VALUE = "choco_session_ok"
@@ -65,6 +66,7 @@ app.include_router(pages.router)
 app.include_router(tool_youtube.router)
 app.include_router(tool_game.router)
 app.include_router(tool_programing.router)
+app.include_router(tool_proxy.router)
 
 app.mount("/static", StaticFiles(directory="templates/static"), name="static")
 app.mount("/photo", StaticFiles(directory="photo"), name="photo")

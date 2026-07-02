@@ -1,0 +1,145 @@
+{% extends "base.html" %}
+{% block title %}{{ service.name }} — 埋め込み — Choco-tube-plus{% endblock %}
+{% block body_class %}proxy-embed-page{% endblock %}
+{% block content %}
+<main class="pe-main">
+
+  <div class="pe-topbar">
+    <a href="/tool/proxy/{{ slug }}" class="pe-back">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" width="16" height="16"><polyline points="15 18 9 12 15 6"/></svg>
+      {{ service.name }}
+    </a>
+
+    <div class="pe-select-wrap">
+      <span id="peStatus" class="pe-status"></span>
+      <select id="peLinkSelect" class="pe-select" disabled>
+        <option>読み込み中...</option>
+      </select>
+    </div>
+  </div>
+
+  <div class="pe-frame-wrap">
+    <div id="peLoading" class="pe-loading">読み込み中...</div>
+    <iframe id="peFrame" class="pe-frame" src="" allowfullscreen hidden></iframe>
+  </div>
+
+</main>
+
+<style>
+html, body.proxy-embed-page { height: 100%; }
+.pe-main {
+  display: flex; flex-direction: column;
+  height: calc(100vh - var(--header-height, 0px));
+  min-height: 480px;
+}
+
+.pe-topbar {
+  display: flex; align-items: center; justify-content: space-between; gap: 12px;
+  padding: 10px 16px;
+  border-bottom: 1px solid var(--border-color, rgba(128,128,128,.2));
+  flex-wrap: wrap;
+}
+.pe-back {
+  display: inline-flex; align-items: center; gap: 5px;
+  font-size: .85rem; font-weight: 600; color: var(--text-secondary); text-decoration: none;
+  transition: color .15s; flex-shrink: 0;
+}
+.pe-back:hover { color: var(--text-primary); }
+
+.pe-select-wrap { display: flex; align-items: center; gap: 10px; margin-left: auto; }
+.pe-status { font-size: .78rem; color: var(--text-secondary); }
+.pe-select {
+  font-size: .82rem; font-weight: 600; max-width: 260px;
+  padding: 6px 10px; border-radius: 8px;
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-color, rgba(128,128,128,.25));
+  color: var(--text-primary); cursor: pointer;
+}
+.pe-select:disabled { opacity: .6; cursor: default; }
+
+.pe-frame-wrap { position: relative; flex: 1; background: #000; }
+.pe-frame { position: absolute; inset: 0; width: 100%; height: 100%; border: none; }
+.pe-loading {
+  position: absolute; inset: 0;
+  display: flex; align-items: center; justify-content: center;
+  color: var(--text-secondary); font-size: .9rem;
+}
+
+@media (max-width: 540px) {
+  .pe-topbar { gap: 8px; }
+  .pe-select-wrap { width: 100%; margin-left: 0; }
+  .pe-select { max-width: none; flex: 1; }
+}
+</style>
+
+<script>
+(async () => {
+  const GH_URL      = {{ gh_url | tojson }};
+  const INITIAL_URL = {{ initial_url | tojson }};
+
+  const selectEl  = document.getElementById('peLinkSelect');
+  const statusEl  = document.getElementById('peStatus');
+  const frameEl   = document.getElementById('peFrame');
+  const loadingEl = document.getElementById('peLoading');
+
+  let links = [];
+  try {
+    const res = await fetch(GH_URL);
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    const data = await res.json();
+    links = Array.isArray(data)
+      ? data.map(i => typeof i === 'string' ? i : (i.url || i.uri || '')).filter(Boolean)
+      : [];
+  } catch (e) {
+    selectEl.innerHTML = '<option>取得に失敗しました</option>';
+    statusEl.textContent = 'エラー';
+    loadingEl.textContent = `⚠️ リンクの取得に失敗しました: ${e.message}`;
+    return;
+  }
+
+  if (!links.length) {
+    selectEl.innerHTML = '<option>リンクなし</option>';
+    statusEl.textContent = '0件';
+    loadingEl.textContent = 'まだリンクが登録されていません';
+    return;
+  }
+
+  statusEl.textContent = `${links.length}件`;
+  selectEl.disabled = false;
+  selectEl.innerHTML = links.map((url, i) =>
+    `<option value="${i}">リンク ${i + 1} — ${url}</option>`
+  ).join('');
+
+  let startIndex = 0;
+  if (INITIAL_URL) {
+    const idx = links.indexOf(INITIAL_URL);
+    if (idx !== -1) startIndex = idx;
+  }
+  selectEl.value = String(startIndex);
+
+  function loadLink(index) {
+    const url = links[index];
+    if (!url) return;
+    loadingEl.hidden = false;
+    loadingEl.textContent = '読み込み中...';
+    frameEl.hidden = true;
+    frameEl.src = url;
+
+    const params = new URLSearchParams(window.location.search);
+    params.set('u', url);
+    history.replaceState(null, '', `${window.location.pathname}?${params.toString()}`);
+  }
+
+  frameEl.addEventListener('load', () => {
+    loadingEl.hidden = true;
+    frameEl.hidden = false;
+  });
+
+  selectEl.addEventListener('change', () => {
+    loadLink(Number(selectEl.value));
+  });
+
+  loadLink(startIndex);
+})();
+</script>
+{% endblock %}

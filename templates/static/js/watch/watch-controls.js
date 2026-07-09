@@ -409,6 +409,7 @@ function initCustomControls() {
   player.addEventListener('loadedmetadata', () => {
     vcSeek.max = 1000;
     updateSeek();
+    if (isIframeMode()) return;
     vctrls.classList.add('vctrls-show');
     showCtrls();
   });

@@ -598,8 +598,8 @@ async def api_piped_stream(video_id: str, want_proxy: bool = True, request: Requ
         )
 
     instance = result["instance"]
-    # proxy 用: 音付き MP4 > 映像のみフォールバック（HLS はプロキシ不向き）
-    proxy_stream_url = result["combined_url"] or result["fallback_url"]
+    # proxy 用: 音付き MP4 > HLS > 映像のみフォールバック
+    proxy_stream_url = result["combined_url"] or result["hls_url"] or result["fallback_url"]
     # direct 用: 音付き MP4 > HLS > 映像のみフォールバック
     direct_stream_url = result["combined_url"] or result["hls_url"] or result["fallback_url"]
     stream_type = (
@@ -649,14 +649,12 @@ async def api_piped_stream(video_id: str, want_proxy: bool = True, request: Requ
         })
 
 
-@router.get("/proxy/piped-stream")
-async def proxy_piped_stream(url: str, request: Request):
-    from fastapi.responses import StreamingResponse
+def _is_piped_proxy_url_allowed(url: str) -> bool:
     from urllib.parse import urlparse
 
     parsed = urlparse(url)
     hostname = parsed.hostname or ""
-    allowed = (
+    return (
         hostname.startswith("pipedproxy.")
         or hostname.startswith("proxy.")
         or hostname in {"pipedapi.wireway.ch", "api.piped.private.coffee", "pipedapi.winscloud.net"}
@@ -669,7 +667,38 @@ async def proxy_piped_stream(url: str, request: Request):
         or hostname.endswith(".odycdn.com")
         or hostname.endswith(".ggpht.com")
     )
-    if not allowed:
+
+
+def _rewrite_hls_manifest(body: str, base_url: str) -> str:
+    """m3u8 内の相対/絶対URLを自プロキシ経由のURLへ書き換える。"""
+    from urllib.parse import urljoin
+
+    lines = body.splitlines()
+    out_lines: list[str] = []
+    for line in lines:
+        stripped = line.strip()
+        if not stripped or stripped.startswith("#"):
+            if stripped.startswith("#EXT-X-KEY") or stripped.startswith("#EXT-X-MEDIA"):
+                import re
+
+                def _repl(m: "re.Match") -> str:
+                    orig = m.group(1)
+                    absolute = urljoin(base_url, orig)
+                    return f'URI="/proxy/piped-stream?url={quote(absolute)}"'
+
+                line = re.sub(r'URI="([^"]+)"', _repl, line)
+            out_lines.append(line)
+            continue
+        absolute = urljoin(base_url, stripped)
+        out_lines.append(f"/proxy/piped-stream?url={quote(absolute)}")
+    return "\n".join(out_lines) + "\n"
+
+
+@router.get("/proxy/piped-stream")
+async def proxy_piped_stream(url: str, request: Request):
+    from fastapi.responses import PlainTextResponse, StreamingResponse
+
+    if not _is_piped_proxy_url_allowed(url):
         return JSONResponse({"error": "不正なURL"}, status_code=400)
 
     req_headers: dict[str, str] = {}
@@ -681,6 +710,26 @@ async def proxy_piped_stream(url: str, request: Request):
         timeout=httpx.Timeout(connect=10.0, read=90.0, write=10.0, pool=5.0),
         follow_redirects=True,
     )
+    is_manifest = ".m3u8" in url or "/manifest/hls_" in url
+
+    if is_manifest:
+        try:
+            resp = await cl.get(url, headers=req_headers)
+        except Exception as e:
+            await cl.aclose()
+            return JSONResponse({"error": str(e)}, status_code=502)
+        try:
+            content_type = resp.headers.get("content-type", "application/vnd.apple.mpegurl")
+            rewritten = _rewrite_hls_manifest(resp.text, str(resp.url))
+            return PlainTextResponse(
+                rewritten,
+                status_code=resp.status_code,
+                media_type=content_type,
+                headers={"cache-control": "no-cache"},
+            )
+        finally:
+            await cl.aclose()
+
     try:
         req = cl.build_request("GET", url, headers=req_headers)
         resp = await cl.send(req, stream=True)

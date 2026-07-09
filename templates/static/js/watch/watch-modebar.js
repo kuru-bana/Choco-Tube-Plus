@@ -853,6 +853,7 @@ function initPipedMode(videoId) {
   // ストリームURLをプレイヤーにセットして再生
   function _playUrl(srcUrl, savedTime) {
     if (!player) return;
+    if (!modePiped.classList.contains('active')) return;
     player.src = srcUrl;
     player.removeAttribute('hidden');
     if (savedTime > 1) {
@@ -884,27 +885,35 @@ function initPipedMode(videoId) {
       if (data.mode === 'proxy') {
         const rem = data.remaining;
         _pipedSaveCachedRemaining(rem);
-        const typeLabel = data.stream_type === 'combined' ? '音付き' : (data.stream_type === 'hls' ? 'HLS' : '映像のみ');
-        _showStatus(`Proxy再生中 (${typeLabel}) — 今日残り${rem}回 / ${host}`);
-        if (typeof setInstanceLabel === 'function') setInstanceLabel(data.instance || 'piped');
+        if (modePiped.classList.contains('active')) {
+          const typeLabel = data.stream_type === 'combined' ? '音付き' : (data.stream_type === 'hls' ? 'HLS' : '映像のみ');
+          _showStatus(`Proxy再生中 (${typeLabel}) — 今日残り${rem}回 / ${host}`);
+          if (typeof setInstanceLabel === 'function') setInstanceLabel(data.instance || 'piped');
+        }
         _playUrl(data.proxy_url, savedTime);
 
       } else if (data.mode === 'direct') {
-        const typeLabel = data.stream_type === 'combined' ? '音付き' : (data.stream_type === 'hls' ? 'HLS' : '映像のみ');
-        _showStatus(`Direct埋め込み (${typeLabel}) — ${host}`);
-        if (typeof setInstanceLabel === 'function') setInstanceLabel(data.instance || 'piped');
+        if (modePiped.classList.contains('active')) {
+          const typeLabel = data.stream_type === 'combined' ? '音付き' : (data.stream_type === 'hls' ? 'HLS' : '映像のみ');
+          _showStatus(`Direct埋め込み (${typeLabel}) — ${host}`);
+          if (typeof setInstanceLabel === 'function') setInstanceLabel(data.instance || 'piped');
+        }
         _playUrl(data.url, savedTime);
 
       } else if (data.mode === 'denied') {
         _pipedSaveCachedRemaining(0);
-        _showStatus(`制限到達: ${data.message}`, true);
-        if (errorEl) errorEl.hidden = false;
-        if (errorMsg) errorMsg.textContent = data.message;
+        if (modePiped.classList.contains('active')) {
+          _showStatus(`制限到達: ${data.message}`, true);
+          if (errorEl) errorEl.hidden = false;
+          if (errorMsg) errorMsg.textContent = data.message;
+        }
       }
     } catch (e) {
-      _showStatus('取得失敗: ' + e.message, true);
-      if (errorEl) errorEl.hidden = false;
-      if (errorMsg) errorMsg.textContent = 'Pipedストリームの取得に失敗しました。';
+      if (modePiped.classList.contains('active')) {
+        _showStatus('取得失敗: ' + e.message, true);
+        if (errorEl) errorEl.hidden = false;
+        if (errorMsg) errorMsg.textContent = 'Pipedストリームの取得に失敗しました。';
+      }
     } finally {
       _loading = false;
     }

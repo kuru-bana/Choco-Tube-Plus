@@ -3,7 +3,8 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>ちょこちゃっとツール</title>
+  <title>ちょこちゃっと</title>
+  <link rel="icon" type="image/jpeg" href="/favicon.jpg">
   <style>
 * {
   margin: 0;
@@ -40,196 +41,6 @@ body.theme-blue {
   display: none !important;
 }
 
-/* ===== サーバー設定画面 ===== */
-#server-setup-section {
-  min-height: 100vh;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  padding: 20px;
-  background: linear-gradient(135deg, #3d1c02 0%, #7b4a1e 50%, #3d1c02 100%);
-}
-
-.server-setup-container {
-  background: white;
-  padding: 40px;
-  border-radius: 16px;
-  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.4);
-  width: 100%;
-  max-width: 440px;
-  animation: fadeIn 0.5s ease;
-  text-align: center;
-}
-
-.server-setup-logo {
-  font-size: 48px;
-  margin-bottom: 8px;
-}
-
-.server-setup-container h1 {
-  color: #3d1c02;
-  margin-bottom: 6px;
-  font-size: 26px;
-}
-
-.server-setup-subtitle {
-  color: #888;
-  font-size: 13px;
-  margin-bottom: 28px;
-}
-
-.server-setup-label {
-  display: block;
-  text-align: left;
-  font-size: 13px;
-  font-weight: bold;
-  color: #555;
-  margin-bottom: 8px;
-}
-
-#server-url-input {
-  width: 100%;
-  padding: 14px 16px;
-  border: 2px solid #e0e0e0;
-  border-radius: 8px;
-  font-size: 15px;
-  margin-bottom: 16px;
-  transition: border-color 0.3s, box-shadow 0.3s;
-  font-family: monospace;
-}
-
-#server-url-input:focus {
-  outline: none;
-  border-color: #7b4a1e;
-  box-shadow: 0 0 6px rgba(123, 74, 30, 0.3);
-}
-
-#server-connect-btn {
-  width: 100%;
-  padding: 14px;
-  background-color: #7b4a1e;
-  border: none;
-  border-radius: 8px;
-  color: white;
-  font-size: 16px;
-  font-weight: bold;
-  cursor: pointer;
-  transition: background-color 0.3s, transform 0.2s;
-}
-
-#server-connect-btn:hover:not(:disabled) {
-  background-color: #5c3614;
-  transform: scale(1.02);
-}
-
-#server-connect-btn:disabled {
-  background-color: #b8895a;
-  cursor: not-allowed;
-}
-
-.server-setup-hint {
-  margin-top: 16px;
-  font-size: 12px;
-  color: #aaa;
-}
-
-#server-status {
-  margin-top: 14px;
-  padding: 12px 14px;
-  border-radius: 8px;
-  font-size: 14px;
-  font-weight: bold;
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  animation: fadeIn 0.3s ease;
-}
-
-#server-status.testing {
-  background: #fff8e1;
-  border: 1px solid #ffe082;
-  color: #7b5800;
-}
-
-#server-status.success {
-  background: #e8f8f0;
-  border: 1px solid #a3d9b8;
-  color: #1a6e3c;
-}
-
-#server-status.error {
-  background: #fdeaea;
-  border: 1px solid #f5c6c6;
-  color: #c0392b;
-}
-
-.status-spinner {
-  width: 16px;
-  height: 16px;
-  border: 2px solid #ffe082;
-  border-top-color: #7b5800;
-  border-radius: 50%;
-  animation: spin 0.8s linear infinite;
-  flex-shrink: 0;
-}
-
-@keyframes spin {
-  to { transform: rotate(360deg); }
-}
-
-.setup-divider {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  margin: 18px 0;
-  color: #bbb;
-  font-size: 12px;
-}
-
-.setup-divider::before,
-.setup-divider::after {
-  content: '';
-  flex: 1;
-  height: 1px;
-  background: #e0e0e0;
-}
-
-#latest-connect-btn {
-  width: 100%;
-  padding: 13px;
-  background: linear-gradient(135deg, #2c3e50 0%, #3498db 100%);
-  border: none;
-  border-radius: 8px;
-  color: white;
-  font-size: 15px;
-  font-weight: bold;
-  cursor: pointer;
-  transition: opacity 0.2s, transform 0.2s;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-  margin-bottom: 6px;
-}
-
-#latest-connect-btn:hover:not(:disabled) {
-  opacity: 0.88;
-  transform: scale(1.02);
-}
-
-#latest-connect-btn:disabled {
-  opacity: 0.6;
-  cursor: not-allowed;
-}
-
-.latest-hint {
-  font-size: 11px;
-  color: #bbb;
-  text-align: center;
-  margin-bottom: 4px;
-}
-
-/* ===== 認証画面 ===== */
 #auth-section {
   min-height: calc(100vh - 60px);
   display: flex;
@@ -362,7 +173,6 @@ body.theme-blue {
   75% { transform: translateX(5px); }
 }
 
-/* ===== チャット画面 ===== */
 #chat-section {
   margin-top: 0px;
   padding: 20px;
@@ -371,7 +181,6 @@ body.theme-blue {
 .chat-header {
   text-align: center;
   margin-bottom: 10px;
-  position: relative;
 }
 
 .chat-header h2 {
@@ -1229,6 +1038,10 @@ body.theme-blue {
   display: none !important;
 }
 
+#chat-box.hide-prm .private-message {
+  display: none !important;
+}
+
 .command-item.privileged-admin-only {
   border-color: #9b59b6;
   background: #f5e6ff;
@@ -1334,6 +1147,30 @@ body.theme-blue {
   color: #aaa;
 }
 
+#meet-container {
+  margin-bottom: 15px;
+  border-radius: 8px;
+  overflow: hidden;
+  border: 1px solid #ccc;
+}
+
+.theme-dark #meet-container {
+  border-color: #555;
+}
+
+#meet-iframe {
+  width: 100%;
+  height: 600px;
+  border: none;
+  display: block;
+}
+
+@media (max-width: 600px) {
+  #meet-iframe {
+    height: 400px;
+  }
+}
+
 @media (max-width: 600px) {
   #chat-section {
     padding: 10px;
@@ -1367,6 +1204,11 @@ body.theme-blue {
   #profile-settings input[type="text"] {
     width: 100%;
   }
+}
+
+/* 管理者リストボタン */
+.chat-header {
+  position: relative;
 }
 
 .header-buttons {
@@ -1429,6 +1271,7 @@ body.theme-blue {
   background: #7b241c;
 }
 
+/* 管理者リストモーダル */
 .admin-list-modal-content {
   max-width: 380px;
 }
@@ -1491,6 +1334,7 @@ body.theme-blue {
   background: #636e72;
 }
 
+/* 管理者パネルモーダル */
 #admin-panel-modal {
   background: transparent;
   pointer-events: none;
@@ -2033,6 +1877,195 @@ body.theme-blue {
   background: #222;
   border-top-color: #444;
 }
+/* ===== サーバー設定画面 ===== */
+#server-setup-section {
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 20px;
+  background: linear-gradient(135deg, #3d1c02 0%, #7b4a1e 50%, #3d1c02 100%);
+}
+
+.server-setup-container {
+  background: white;
+  padding: 40px;
+  border-radius: 16px;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.4);
+  width: 100%;
+  max-width: 440px;
+  animation: fadeIn 0.5s ease;
+  text-align: center;
+}
+
+.server-setup-logo {
+  font-size: 48px;
+  margin-bottom: 8px;
+}
+
+.server-setup-container h1 {
+  color: #3d1c02;
+  margin-bottom: 6px;
+  font-size: 26px;
+}
+
+.server-setup-subtitle {
+  color: #888;
+  font-size: 13px;
+  margin-bottom: 28px;
+}
+
+.server-setup-label {
+  display: block;
+  text-align: left;
+  font-size: 13px;
+  font-weight: bold;
+  color: #555;
+  margin-bottom: 8px;
+}
+
+#server-url-input {
+  width: 100%;
+  padding: 14px 16px;
+  border: 2px solid #e0e0e0;
+  border-radius: 8px;
+  font-size: 15px;
+  margin-bottom: 16px;
+  transition: border-color 0.3s, box-shadow 0.3s;
+  font-family: monospace;
+}
+
+#server-url-input:focus {
+  outline: none;
+  border-color: #7b4a1e;
+  box-shadow: 0 0 6px rgba(123, 74, 30, 0.3);
+}
+
+#server-connect-btn {
+  width: 100%;
+  padding: 14px;
+  background-color: #7b4a1e;
+  border: none;
+  border-radius: 8px;
+  color: white;
+  font-size: 16px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background-color 0.3s, transform 0.2s;
+}
+
+#server-connect-btn:hover:not(:disabled) {
+  background-color: #5c3614;
+  transform: scale(1.02);
+}
+
+#server-connect-btn:disabled {
+  background-color: #b8895a;
+  cursor: not-allowed;
+}
+
+.server-setup-hint {
+  margin-top: 16px;
+  font-size: 12px;
+  color: #aaa;
+}
+
+#server-status {
+  margin-top: 14px;
+  padding: 12px 14px;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: bold;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  animation: fadeIn 0.3s ease;
+}
+
+#server-status.testing {
+  background: #fff8e1;
+  border: 1px solid #ffe082;
+  color: #7b5800;
+}
+
+#server-status.success {
+  background: #e8f8f0;
+  border: 1px solid #a3d9b8;
+  color: #1a6e3c;
+}
+
+#server-status.error {
+  background: #fdeaea;
+  border: 1px solid #f5c6c6;
+  color: #c0392b;
+}
+
+.status-spinner {
+  width: 16px;
+  height: 16px;
+  border: 2px solid #ffe082;
+  border-top-color: #7b5800;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+  flex-shrink: 0;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+.setup-divider {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 18px 0;
+  color: #bbb;
+  font-size: 12px;
+}
+
+.setup-divider::before,
+.setup-divider::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: #e0e0e0;
+}
+
+#latest-connect-btn {
+  width: 100%;
+  padding: 13px;
+  background: linear-gradient(135deg, #2c3e50 0%, #3498db 100%);
+  border: none;
+  border-radius: 8px;
+  color: white;
+  font-size: 15px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: opacity 0.2s, transform 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  margin-bottom: 6px;
+}
+
+#latest-connect-btn:hover:not(:disabled) {
+  opacity: 0.88;
+  transform: scale(1.02);
+}
+
+#latest-connect-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.latest-hint {
+  font-size: 11px;
+  color: #bbb;
+  text-align: center;
+  margin-bottom: 4px;
+}
+
 
 /* サーバー情報バー（常時固定） */
 #server-info-bar {
@@ -2085,7 +2118,8 @@ body.theme-blue {
   </style>
 </head>
 <body class="theme-default">
-
+</head>
+<body class="theme-default">
   <!-- サーバー情報バー（常時表示） -->
   <div id="server-info-bar" class="hidden">
     <span class="bar-label">接続先:</span>
@@ -2113,10 +2147,9 @@ body.theme-blue {
     </div>
   </div>
 
-  <!-- 認証画面 -->
   <div id="auth-section">
     <div class="auth-container">
-      <h1>チョコChat</h1>
+      <h1>ちょこちゃっと</h1>
 
       <div id="login-form" class="auth-form active">
         <h3>ログイン</h3>
@@ -2157,9 +2190,8 @@ body.theme-blue {
 
   <div id="chat-section" class="hidden">
     <div id="new-message-notice" class="hidden">新着メッセージがあります</div>
-
     <div class="chat-header">
-      <h1>choco-chat</h1>
+      <h1>Choco-Chat</h1>
       <h2>利用規約を遵守すること</h2>
       <div class="header-buttons">
         <button id="admin-panel-btn" class="hidden">管理者パネル</button>
@@ -2198,6 +2230,8 @@ body.theme-blue {
         <button id="send-btn">送信</button>
         <button id="omikuji-btn" style="background-color: #e67e22; color: #fff; border: none; padding: 10px 20px; border-radius: 4px; cursor: pointer; transition: background-color 0.3s ease, transform 0.2s ease; font-size: 14px; font-weight: bold; height: 40px; display: flex; align-items: center; justify-content: center;">おみくじ</button>
         <button id="toggle-system-messages">入退室通知: 表示</button>
+        <button id="toggle-prm-btn">プラメ: 表示</button>
+        <button id="toggle-meet-btn">eagler用meet: 非表示</button>
         <div class="logout-container">
           <button id="logoutButton">ログアウト</button>
         </div>
@@ -2234,6 +2268,13 @@ body.theme-blue {
     <div id="connection-log" class="hidden">
       <h4>【IP閲覧者専用】接続ログ（要注意接続のみ）</h4>
       <div id="connection-log-content"></div>
+    </div>
+
+    <div id="meet-container" class="hidden">
+      <iframe src=""
+              id="meet-iframe"
+              allow="camera; microphone; display-capture; fullscreen"
+              allowfullscreen></iframe>
     </div>
 
     <div id="command-summary">
@@ -2394,210 +2435,12 @@ body.theme-blue {
     </div>
   </div>
 
-<div id="tos-modal" class="tos-modal hidden">
+  <div id="tos-modal" class="tos-modal hidden">
     <div class="tos-modal-content">
       <h2 class="tos-title">利用規約</h2>
       <p class="tos-instruction">最後までスクロールすると同意ボタンが押せるようになります。</p>
       <div class="tos-body" id="tos-body">
-        <p><strong>最終更新日: 2026年5月21日</strong></p>
-        <p>本利用規約（以下「本規約」）は、本サービス（以下「本サービス」）の利用条件を定めるものです。利用者は、本規約に同意したうえで本サービスを利用するものとします。</p>
-        <p>本サービスは、オープンチャット形式のコミュニケーションサービスです。多くの利用者がリアルタイムで利用する特性上、安全性・秩序維持・荒らし対策を重視したモデレーションを行っています。</p>
-
-        <h3>第1条（適用）</h3>
-        <ol>
-          <li>本規約は、本サービスの提供条件および本サービス利用に関する運営者と利用者との間の権利義務関係を定めるものです。</li>
-          <li>利用者は、本規約に同意した場合のみ本サービスを利用できます。</li>
-          <li>本サービス上に掲載されるガイドライン、ルール、注意事項等は、本規約の一部を構成するものとします。</li>
-          <li>運営は、本サービスの安全性・安定性・秩序維持を目的として、必要な範囲で利用制限やモデレーションを行う場合があります。</li>
-        </ol>
-
-        <h3>第2条（アカウント）</h3>
-        <ol>
-          <li>利用者は、虚偽の情報を用いてアカウントを作成してはなりません。</li>
-          <li>アカウントの譲渡、共有、貸与は禁止します。</li>
-          <li>利用停止措置、BAN、ミュート等を回避する目的でのアカウント作成を禁止します。</li>
-          <li>運営は、不正利用または規約違反が確認された場合、事前通知なくアカウント停止または削除を行う場合があります。</li>
-          <li>利用者は、自身のアカウント管理について責任を負うものとします。</li>
-        </ol>
-
-        <h3>第3条（禁止事項）</h3>
-        <p>利用者は、本サービスの利用にあたり、以下の行為を行ってはなりません。</p>
-
-        <h4>3-1. 違法・危険行為</h4>
-        <ul>
-          <li>法令または公序良俗に反する行為</li>
-          <li>犯罪行為または犯罪を助長する行為</li>
-          <li>自殺、自傷、危険行為等を助長または誘導する行為</li>
-          <li>詐欺、脅迫、恐喝等に関連する行為</li>
-          <li>違法薬物、武器、不正ツール等に関する投稿</li>
-          <li>リーク情報、違法取得情報等の投稿</li>
-        </ul>
-
-        <h4>3-2. 不適切コンテンツ</h4>
-        <ul>
-          <li>わいせつ、性的、過度に暴力的またはグロテスクな内容の投稿</li>
-          <li>未成年に不適切な内容の投稿</li>
-          <li>過激または著しく不快と判断される表現</li>
-          <li>ショックコンテンツの拡散</li>
-        </ul>
-
-        <h4>3-3. 権利侵害</h4>
-        <ul>
-          <li>著作権、商標権、肖像権、プライバシー権等を侵害する行為</li>
-          <li>無断転載、違法アップロード</li>
-          <li>他者の個人情報を本人の許可なく投稿または共有する行為</li>
-          <li>なりすまし行為</li>
-        </ul>
-
-        <h4>3-4. コミュニティ妨害</h4>
-        <ul>
-          <li>荒らし、スパム、大量投稿、連投</li>
-          <li>意味のない文字列、大量AA、同一内容連投等の迷惑投稿</li>
-          <li>BOT、自動化ツール等による投稿またはアクセス</li>
-          <li>通報機能の悪用</li>
-          <li>サービス運営を妨害する行為</li>
-          <li>意図的なチャット妨害</li>
-          <li>他ユーザーへの執拗な攻撃、誹謗中傷、嫌がらせ</li>
-          <li>過度な暴言、挑発、威圧的行為</li>
-          <li>コミュニティ秩序を著しく乱す行為</li>
-          <li>他チャットの宣伝(channel talk, line, その他すべて)</li>
-        </ul>
-
-        <h4>3-5. サービス攻撃・技術的妨害</h4>
-        <ul>
-          <li>不正アクセス</li>
-          <li>脆弱性探索、攻撃行為</li>
-          <li>田代砲、DoS、DDoS、大量リクエスト送信等によるサービス妨害</li>
-          <li>過度な負荷を与える行為</li>
-          <li>システムまたはネットワークへの攻撃</li>
-          <li>スクレイピング、クローリング等の自動取得行為</li>
-          <li>リバースエンジニアリング</li>
-        </ul>
-
-        <h4>3-6. 外部誘導・宣伝</h4>
-        <ul>
-          <li>出会い目的での利用</li>
-          <li>他チャットサービス、コミュニティ、SNS等への勧誘または宣伝</li>
-          <li>悪質な外部サイトへの誘導</li>
-          <li>フィッシング、マルウェア配布等を目的とした投稿</li>
-        </ul>
-
-        <h4>3-7. 接続・アクセス制限</h4>
-        <ul>
-          <li>VPN、プロキシ、Tor、匿名化サービス等を利用したアクセス</li>
-          <li>接続元情報を偽装または隠蔽する行為</li>
-          <li>BAN回避を目的としたアクセス</li>
-          <li>運営が許可していない経路からのアクセス</li>
-        </ul>
-        <p>ただし、運営が特別に許可した一部アクセス経路についてはこの限りではありません。</p>
-
-        <h4>3-8. その他</h4>
-        <ul>
-          <li>その他、運営が本サービスの安全性・秩序維持に支障があると判断する行為</li>
-        </ul>
-
-        <h3>第4条（投稿データ・ログ保存）</h3>
-        <ol>
-          <li>投稿メッセージは、サービス運営、障害調査、不正対策、荒らし対策等のためサーバー上に保存される場合があります。</li>
-          <li>一定件数を超えた古いメッセージは、通常表示対象外となる場合があります。</li>
-          <li>利用者が削除したデータについても、バックアップ、ログ、障害調査等の目的で一定期間保存される場合があります。</li>
-          <li>運営は、必要に応じて投稿内容、接続ログ等を確認する場合があります。</li>
-          <li>本サービスでは、以下を含む情報を記録する場合があります。</li>
-        </ol>
-        <ul>
-          <li>IPアドレス</li>
-          <li>User-Agent</li>
-          <li>投稿履歴</li>
-          <li>接続時刻</li>
-          <li>通報履歴</li>
-          <li>モデレーション履歴</li>
-          <li>アクセスログ</li>
-        </ul>
-        <ol start="6">
-          <li>運営は、法令に基づく要請があった場合、必要な範囲で情報を開示する場合があります。</li>
-        </ol>
-
-        <h3>第5条（モデレーション）</h3>
-        <ol>
-          <li>運営は、本サービスの安全性および秩序維持のため、投稿削除、ミュート、機能制限、アクセス制限、アカウント停止、BAN等の措置を行うことがあります。</li>
-          <li>荒らし、BOT利用、スパム、DoS攻撃、サービス妨害、違法行為等については、事前通知なく即時BANとなる場合があります。</li>
-          <li>暴言、誹謗中傷、挑発行為等については、ミュートまたは投稿制限を行う場合があります。</li>
-          <li>本サービスでは、自動判定システムを利用して投稿制限、ミュート、BAN等を行う場合があります。</li>
-          <li>自動判定には誤検知が含まれる場合があります。</li>
-          <li>運営は、モデレーション措置の理由説明を行う義務を負いません。</li>
-          <li>利用者は、運営のモデレーション判断に従うものとします。</li>
-        </ol>
-
-        <h3>第6条（アクセス制限・セキュリティ）</h3>
-        <ol>
-          <li>本サービスでは、安全性維持のためCAPTCHA、レート制限等を導入しています。</li>
-          <li>運営は、一部地域、IPアドレス、ネットワーク等からのアクセスを制限する場合があります。</li>
-          <li>VPN、プロキシ等の利用が確認された場合、ミュート、アクセス制限、アカウント停止またはBAN等の措置を行う場合があります。</li>
-          <li>運営は、セキュリティ上必要と判断した場合、特定ユーザーまたは接続元に対して追加制限を行う場合があります。</li>
-        </ol>
-
-        <h3>第7条（サービス変更・停止）</h3>
-        <ol>
-          <li>運営は、利用者への事前通知なく、本サービスの内容変更、一時停止、終了を行うことがあります。</li>
-          <li>システム保守、障害対応、攻撃対策等のため、一時的にサービスを停止する場合があります。</li>
-          <li>サービス終了時、運営は利用者データの保存を保証しません。</li>
-        </ol>
-
-        <h3>第8条（免責）</h3>
-        <ol>
-          <li>運営は、本サービスに投稿される情報の正確性、安全性、適法性、有用性を保証するものではありません。</li>
-          <li>利用者間で発生したトラブルについて、運営は責任を負いません。</li>
-          <li>サーバー障害、通信障害、データ消失、誤BAN等によって生じた損害について、運営は責任を負わないものとします。</li>
-          <li>運営は、本サービスが常時利用可能であることを保証しません。</li>
-          <li>利用者は、自己責任で本サービスを利用するものとします。</li>
-        </ol>
-
-        <h3>第9条（規約変更）</h3>
-        <ol>
-          <li>運営は、必要に応じて本規約を変更できるものとします。</li>
-          <li>変更後の規約は、本サービス上に掲載した時点から効力を生じるものとします。</li>
-          <li>規約変更後に本サービスを利用した場合、利用者は変更後の規約に同意したものとみなします。</li>
-        </ol>
-
-        <h3>第10条（準拠法）</h3>
-        <p>本規約は日本法に準拠し、日本法に基づいて解釈されます。</p>
-
-        <h3>第11条（知的財産権）</h3>
-        <ol>
-          <li>本サービスに関するシステム、デザイン、ロゴ、プログラム等の権利は運営または正当な権利者に帰属します。</li>
-          <li>利用者は、法令で認められる範囲を超えて、本サービスの内容を無断で転載、複製、配布、改変してはなりません。</li>
-        </ol>
-
-        <h3>第12条（利用環境）</h3>
-        <ol>
-          <li>利用者は、自己の責任と費用において本サービスを利用するための端末、通信環境等を用意するものとします。</li>
-          <li>通信環境、端末性能、ブラウザ等により、本サービスの一部機能が正常に動作しない場合があります。</li>
-        </ol>
-
-        <h3>第13条（未成年者の利用）</h3>
-        <ol>
-          <li>未成年者は、保護者等法定代理人の同意を得たうえで本サービスを利用するものとします。</li>
-          <li>運営は、未成年者保護の観点から必要と判断した場合、利用制限を行うことがあります。</li>
-        </ol>
-
-        <h3>第14条（反社会的勢力の排除）</h3>
-        <p>利用者は、暴力団、反社会的勢力その他これに準ずる者ではないことを表明し、将来にわたっても該当しないことを保証するものとします。</p>
-
-        <h3>第15条（分離可能性）</h3>
-        <p>本規約の一部が法令等により無効または執行不能と判断された場合であっても、その他の規定は継続して有効に存続するものとします。</p>
-
-        <h3>第16条（権利義務の譲渡禁止）</h3>
-        <p>利用者は、運営の事前承諾なく、本規約上の地位または権利義務を第三者へ譲渡または担保提供してはなりません。</p>
-
-        <h3>第17条（お問い合わせ）</h3>
-        <p>本サービスに関するお問い合わせは、運営が指定する方法により行うものとします。</p>
-
-        <h3>第18条</h3>
-        <p>あとはココ・woolisbest・、・、・明治、その他管理者っぽい人々の独断と偏見で判断します。</p>
-        <ul>
-          <li>広島県に対する誹謗中傷はバン対象となります。（by 明治）</li>
-          <li>群馬県をグンマー帝国と呼びましょう（for remon）</li>
-        </ul>
+        <p class="tos-loading">読み込み中...</p>
       </div>
       <div class="tos-footer">
         <p id="tos-scroll-hint" class="tos-scroll-hint">↓ 最後までスクロールしてください</p>
@@ -2605,22 +2448,22 @@ body.theme-blue {
       </div>
     </div>
   </div>
-  
+
+
   <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
   <script>
 (function() {
 'use strict';
 
 const serverSetupSection = document.getElementById('server-setup-section');
-const authSection = document.getElementById('auth-section');
-const chatSection = document.getElementById('chat-section');
+const authSectionEl = document.getElementById('auth-section');
 
 // サーバーURL確認
 const storedServerUrl = localStorage.getItem('chatServerUrl');
 
 if (!storedServerUrl) {
   serverSetupSection.classList.remove('hidden');
-  authSection.classList.add('hidden');
+  authSectionEl.classList.add('hidden');
 
   const connectBtn = document.getElementById('server-connect-btn');
   const urlInput = document.getElementById('server-url-input');
@@ -2784,7 +2627,6 @@ document.getElementById('change-server-btn').addEventListener('click', () => {
   }
 });
 
-// Socket.IO接続
 const socket = io(serverUrl, {
   transports: ['websocket', 'polling'],
   reconnection: true,
@@ -2805,6 +2647,8 @@ socket.on('disconnect', (reason) => {
   }
 });
 
+const authSection = document.getElementById('auth-section');
+const chatSection = document.getElementById('chat-section');
 let currentUser = null;
 let currentProfile = null;
 let isAdmin = false;
@@ -2940,20 +2784,68 @@ function handleLoginSuccess(response) {
 
   authSection.classList.add('hidden');
 
-  
   showTosModal(response);
 }
 
-function showTosModal(response) {
+let tosContentCache = null;
+
+function escapeHtml(str) {
+  const div = document.createElement('div');
+  div.textContent = str;
+  return div.innerHTML;
+}
+
+function renderTosBlocks(blocks) {
+  return blocks.map((block) => {
+    switch (block.type) {
+      case 'p':
+        return `<p>${block.html || escapeHtml(block.text || '')}</p>`;
+      case 'h3':
+        return `<h3>${escapeHtml(block.text || '')}</h3>`;
+      case 'h4':
+        return `<h4>${escapeHtml(block.text || '')}</h4>`;
+      case 'ul':
+        return `<ul>${(block.items || []).map((item) => `<li>${escapeHtml(item)}</li>`).join('')}</ul>`;
+      case 'ol': {
+        const startAttr = block.start ? ` start="${Number(block.start)}"` : '';
+        return `<ol${startAttr}>${(block.items || []).map((item) => `<li>${escapeHtml(item)}</li>`).join('')}</ol>`;
+      }
+      default:
+        return '';
+    }
+  }).join('');
+}
+
+async function fetchTosContent() {
+  if (tosContentCache) return tosContentCache;
+  const res = await fetch(serverUrl + '/api/tos');
+  if (!res.ok) throw new Error('利用規約の取得に失敗しました');
+  const data = await res.json();
+  tosContentCache = data;
+  return data;
+}
+
+async function showTosModal(response) {
   const tosModal = document.getElementById('tos-modal');
   const tosBody = document.getElementById('tos-body');
   const tosAgreeBtn = document.getElementById('tos-agree-btn');
   const tosScrollHint = document.getElementById('tos-scroll-hint');
 
-  tosBody.scrollTop = 0;
   tosAgreeBtn.disabled = true;
   tosScrollHint.classList.remove('done');
   tosModal.classList.remove('hidden');
+  tosBody.innerHTML = '<p class="tos-loading">読み込み中...</p>';
+
+  try {
+    const data = await fetchTosContent();
+    tosBody.innerHTML = renderTosBlocks(data.blocks || []);
+  } catch (err) {
+    console.error(err);
+    tosBody.innerHTML = '<p>利用規約の読み込みに失敗しました。再読み込みしてください。</p>';
+    return;
+  }
+
+  tosBody.scrollTop = 0;
 
   function checkScroll() {
     const threshold = 20;
@@ -3133,19 +3025,27 @@ document.getElementById('loginButton').addEventListener('click', () => {
 });
 
 document.getElementById('loginDisplayName').addEventListener('keypress', (e) => {
-  if (e.key === 'Enter') document.getElementById('loginButton').click();
+  if (e.key === 'Enter') {
+    document.getElementById('loginButton').click();
+  }
 });
 
 document.getElementById('loginPassword').addEventListener('keypress', (e) => {
-  if (e.key === 'Enter') document.getElementById('loginButton').click();
+  if (e.key === 'Enter') {
+    document.getElementById('loginButton').click();
+  }
 });
 
 document.getElementById('signupUsername').addEventListener('keypress', (e) => {
-  if (e.key === 'Enter') document.getElementById('signupButton').click();
+  if (e.key === 'Enter') {
+    document.getElementById('signupButton').click();
+  }
 });
 
 document.getElementById('signupPasswordConfirm').addEventListener('keypress', (e) => {
-  if (e.key === 'Enter') document.getElementById('signupButton').click();
+  if (e.key === 'Enter') {
+    document.getElementById('signupButton').click();
+  }
 });
 
 function applyTheme(theme) {
@@ -3339,6 +3239,8 @@ function addMessage(data) {
     statusHtml = `<span class="status-text">${escapeHtml(userStatusMap[baseUsername])}</span>`;
   }
 
+  const showActionMenu = true;
+
   container.innerHTML = `
     ${replyHtml}
     <div class="message-name" style="color: ${data.color || '#333'}">${escapeHtml(data.username)}${statusHtml}</div>
@@ -3347,14 +3249,16 @@ function addMessage(data) {
       <span class="message-time">${formatTime(data.timestamp)}</span>
       ${editedMark}
     </div>
-    <button class="action-menu-btn">⋮</button>
+    ${showActionMenu ? '<button class="action-menu-btn">⋮</button>' : ''}
   `;
 
-  const menuBtn = container.querySelector('.action-menu-btn');
-  menuBtn.addEventListener('click', (e) => {
-    e.stopPropagation();
-    toggleActionMenu(data, container, isOwn, isCommandResult);
-  });
+  if (showActionMenu) {
+    const menuBtn = container.querySelector('.action-menu-btn');
+    menuBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      toggleActionMenu(data, container, isOwn, isCommandResult);
+    });
+  }
 
   chatBox.appendChild(container);
 
@@ -3656,6 +3560,10 @@ document.getElementById('updateProfileButton').addEventListener('click', () => {
       currentProfile = { ...currentProfile, ...response.account };
       applyTheme(response.account.theme);
       userStatusMap[currentUser] = response.account.statusText;
+      const myMessages = document.querySelectorAll(`.message-container[data-username="${currentUser}"] .message-name`);
+      myMessages.forEach(el => {
+        el.style.color = response.account.color;
+      });
       alert('プロフィールを更新しました');
     } else {
       alert(response.error || '更新に失敗しました');
@@ -3677,6 +3585,47 @@ document.getElementById('logoutButton').addEventListener('click', () => {
     window.location.reload();
   }
 });
+
+let showPrm = localStorage.getItem('showPrm') !== 'false';
+(function initPrmToggle() {
+  const btn = document.getElementById('toggle-prm-btn');
+  if (!showPrm) {
+    chatBox.classList.add('hide-prm');
+    btn.textContent = 'プライメ: 非表示';
+  }
+  btn.addEventListener('click', () => {
+    showPrm = !showPrm;
+    localStorage.setItem('showPrm', showPrm);
+    btn.textContent = `プライメ: ${showPrm ? '表示' : '非表示'}`;
+    if (showPrm) {
+      chatBox.classList.remove('hide-prm');
+    } else {
+      chatBox.classList.add('hide-prm');
+    }
+  });
+})();
+
+(function initMeetToggle() {
+  const btn = document.getElementById('toggle-meet-btn');
+  const container = document.getElementById('meet-container');
+  const iframe = document.getElementById('meet-iframe');
+  const MEET_URL = 'https://meet.stuvus.uni-stuttgart.de/eagler';
+  let meetVisible = false;
+
+  btn.addEventListener('click', () => {
+    meetVisible = !meetVisible;
+    btn.textContent = `eagler用meet: ${meetVisible ? '表示' : '非表示'}`;
+    if (meetVisible) {
+      // 初めて開く時だけ src をセット（カメラ・マイク確認はここで発生）
+      if (!iframe.src || iframe.src === window.location.href) {
+        iframe.src = MEET_URL;
+      }
+      container.classList.remove('hidden');
+    } else {
+      container.classList.add('hidden');
+    }
+  });
+})();
 
 document.getElementById('toggle-system-messages').addEventListener('click', (e) => {
   showSystemMessages = !showSystemMessages;
@@ -4115,6 +4064,10 @@ socket.on('disconnect', (reason) => {
   }
 });
 
+socket.on('reconnect', (attemptNumber) => {
+  console.log(`Reconnected after ${attemptNumber} attempts`);
+});
+
 socket.on('reconnect_failed', () => {
   addSystemMessage('再接続に失敗しました。ページをリロードしてください。');
 });
@@ -4193,6 +4146,7 @@ document.getElementById('sharedIpSearchBtn').addEventListener('click', () => {
       return;
     }
     content.innerHTML = res.groups.map(group => {
+      const onlineUsers = group.users.filter(u => onlineUsersList.includes(u));
       const userTags = group.users.map(u => {
         const isOnline = onlineUsersList.includes(u);
         return `<span class="shared-ip-user-tag ${isOnline ? 'online' : 'offline'}">${escapeHtml(u)}${isOnline ? ' ●' : ''}</span>`;
@@ -4242,10 +4196,16 @@ document.getElementById('toggleConnLogBtn').addEventListener('click', () => {
 const adminListModal = document.getElementById('admin-list-modal');
 const adminListBody = document.getElementById('admin-list-body');
 
-document.getElementById('admin-list-btn').addEventListener('click', async () => {
-  try {
-    const res = await fetch(serverUrl + '/admin-list');
-    const data = await res.json();
+document.getElementById('tos-btn').addEventListener('click', () => {
+  showTosModal(null);
+});
+
+document.getElementById('admin-list-btn').addEventListener('click', () => {
+  socket.emit('getAdminList', (data) => {
+    if (!data || !data.success) {
+      console.error('管理者リストの取得に失敗しました');
+      return;
+    }
     adminListBody.innerHTML = '';
 
     const sections = [
@@ -4283,9 +4243,7 @@ document.getElementById('admin-list-btn').addEventListener('click', async () => 
     }
 
     adminListModal.classList.remove('hidden');
-  } catch (e) {
-    console.error('管理者リストの取得に失敗しました', e);
-  }
+  });
 });
 
 document.getElementById('close-admin-list-btn').addEventListener('click', () => {
@@ -4393,6 +4351,7 @@ document.getElementById('admin-panel-btn').addEventListener('click', () => {
 document.getElementById('close-admin-panel-btn').addEventListener('click', () => {
   adminPanelModal.classList.add('hidden');
 });
+
 
 document.getElementById('admin-panel-refresh-btn').addEventListener('click', () => {
   updateAdminPanelUserList();
@@ -4576,7 +4535,7 @@ document.querySelectorAll('.admin-action-btn').forEach(btn => {
     }
   });
 });
- 
+
 })();
   </script>
 </body>

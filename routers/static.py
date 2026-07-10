@@ -57,6 +57,40 @@ _CHOCO_CHAT_CACHE: dict = {}
 _CHOCO_CHAT_TTL = 30 * 60
 
 
+_TOS_URL = "https://raw.githubusercontent.com/kuru-bana/choco-chat-tool/refs/heads/main/tos.json"
+_TOS_FALLBACK_URL = "https://cdn.jsdelivr.net/gh/kuru-bana/choco-chat-tool@main/tos.json"
+_TOS_CACHE: dict = {}
+_TOS_TTL = 30 * 60
+
+
+async def _fetch_tos_direct(url: str):
+    client = await get_client()
+    resp = await client.get(url, timeout=10)
+    resp.raise_for_status()
+    return resp.json()
+
+
+@router.get("/api/tos")
+async def api_tos():
+    now = time.time()
+    cached = _TOS_CACHE.get("data")
+    if cached and now - cached["time"] < _TOS_TTL:
+        return JSONResponse(cached["json"])
+    try:
+        data = await _fetch_tos_direct(_TOS_URL)
+        _TOS_CACHE["data"] = {"json": data, "time": now}
+        return JSONResponse(data)
+    except Exception:
+        try:
+            data = await _fetch_tos_direct(_TOS_FALLBACK_URL)
+            _TOS_CACHE["data"] = {"json": data, "time": now}
+            return JSONResponse(data)
+        except Exception as e:
+            if cached:
+                return JSONResponse(cached["json"])
+            return JSONResponse({"error": str(e)}, status_code=502)
+
+
 @router.get("/choco-chat-new")
 async def choco_chat_new():
     now = time.time()

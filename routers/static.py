@@ -76,19 +76,3 @@ async def choco_chat_new():
         return JSONResponse({"error": str(e)}, status_code=502)
 
 
-# ── ToS proxy (avoids CORS when fetching from a user-configured chat server) ──
-
-
-@router.get("/api/tos-proxy")
-async def tos_proxy(server: str):
-    base = server.rstrip("/")
-    if not base.startswith("http://") and not base.startswith("https://"):
-        return JSONResponse({"error": "invalid server url"}, status_code=400)
-    try:
-        client = await get_client()
-        resp = await client.get(f"{base}/api/tos", timeout=10)
-        resp.raise_for_status()
-        data = resp.json()
-        return JSONResponse(data)
-    except Exception as e:
-        return JSONResponse({"error": str(e)}, status_code=502)

@@ -264,7 +264,7 @@ async function reloadAll(videoId) {
 
   // ストリーム取得：成功したらすぐ再生開始
   try {
-    const streamResult = await withRetry(() => fetchBestStream(videoId));
+    const streamResult = await withRetryOrReload(videoId, () => fetchBestStream(videoId));
     if (!_genOk()) return;
 
     const { data: streamData, instanceUrl } = streamResult;

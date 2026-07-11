@@ -200,4 +200,4 @@ async def chat_page():
 
 @router.get("/chat-raw")
 async def chat_raw():
-    return FileResponse("templates/chat.html")
+    return FileResponse("templates/chat-test.html")

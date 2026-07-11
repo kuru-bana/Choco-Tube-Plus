@@ -321,6 +321,40 @@ async function withRetry(fn, maxRetries = Infinity, baseDelay = 1500, maxDelay =
   }
 }
 
+// ストリーム取得が同じ動画で何度も連続失敗する場合（502等でバックエンドが不安定な時）は、
+// 一定回数リトライしたところでタブを強制的に再読み込みする。再読み込み後も失敗し続ける
+// 無限ループを避けるため、同一動画での自動リロード回数には上限を設ける。
+async function withRetryOrReload(videoId, fn, {
+  maxAttemptsBeforeReload = 5,
+  maxAutoReloads = 3,
+  baseDelay = 1500,
+  maxDelay = 15000,
+} = {}) {
+  const reloadKey = 'chocoStreamReloadCount:' + videoId;
+  let attempt = 0;
+  while (true) {
+    try {
+      const result = await fn();
+      sessionStorage.removeItem(reloadKey);
+      return result;
+    } catch (e) {
+      attempt++;
+      if (attempt >= maxAttemptsBeforeReload) {
+        const reloadCount = parseInt(sessionStorage.getItem(reloadKey) || '0', 10);
+        if (reloadCount < maxAutoReloads) {
+          sessionStorage.setItem(reloadKey, String(reloadCount + 1));
+          console.error(`[watch] ストリーム取得が${attempt}回連続で失敗したためタブを再読み込みします (${reloadCount + 1}/${maxAutoReloads})`, e);
+          location.reload();
+          await new Promise(() => {}); // リロードされるまで以降の処理を止める
+        }
+        throw e; // 自動リロードの上限に達した場合は諦めて呼び出し元にエラーを渡す
+      }
+      const delay = Math.min(baseDelay * Math.pow(1.5, attempt - 1), maxDelay);
+      await new Promise(r => setTimeout(r, delay));
+    }
+  }
+}
+
 async function fetchMain(apiPath) {
   const url = '/proxy/main' + apiPath;
   let lastErr;

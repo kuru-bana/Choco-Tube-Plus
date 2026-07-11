@@ -5,25 +5,485 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Choco Chat</title>
     <style>
-        /* 画面全体に隙間なくiframeを広げる設定 */
+        * { box-sizing: border-box; }
         body, html {
             margin: 0;
             padding: 0;
             height: 100%;
             overflow: hidden;
             background-color: #f5f5f5;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Hiragino Kaku Gothic ProN", Meiryo, sans-serif;
         }
+        .hidden { display: none !important; }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(6px); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* ===== サーバー情報バー ===== */
+        #server-info-bar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 500;
+            background: #3d1c02;
+            color: #fff;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 8px 14px;
+            font-size: 13px;
+        }
+        #server-info-bar .bar-label { color: #d9b98c; }
+        #server-info-bar #server-url-display {
+            flex: 1;
+            font-family: monospace;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+        #server-info-bar button {
+            background: #7b4a1e;
+            border: none;
+            color: #fff;
+            padding: 6px 12px;
+            border-radius: 6px;
+            font-size: 12px;
+            cursor: pointer;
+        }
+        #server-info-bar button:hover { background: #5c3614; }
+
+        /* ===== サーバー設定画面 ===== */
+        #server-setup-section {
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            background: linear-gradient(135deg, #3d1c02 0%, #7b4a1e 50%, #3d1c02 100%);
+        }
+
+        .server-setup-container {
+            background: white;
+            padding: 40px;
+            border-radius: 16px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.4);
+            width: 100%;
+            max-width: 440px;
+            animation: fadeIn 0.5s ease;
+            text-align: center;
+        }
+
+        .server-setup-logo { font-size: 48px; margin-bottom: 8px; }
+
+        .server-setup-container h1 {
+            color: #3d1c02;
+            margin-bottom: 6px;
+            font-size: 26px;
+        }
+
+        .server-setup-subtitle {
+            color: #888;
+            font-size: 13px;
+            margin-bottom: 28px;
+        }
+
+        .server-setup-label {
+            display: block;
+            text-align: left;
+            font-size: 13px;
+            font-weight: bold;
+            color: #555;
+            margin-bottom: 8px;
+        }
+
+        #server-url-input {
+            width: 100%;
+            padding: 14px 16px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 15px;
+            margin-bottom: 16px;
+            transition: border-color 0.3s, box-shadow 0.3s;
+            font-family: monospace;
+        }
+
+        #server-url-input:focus {
+            outline: none;
+            border-color: #7b4a1e;
+            box-shadow: 0 0 6px rgba(123, 74, 30, 0.3);
+        }
+
+        #server-connect-btn {
+            width: 100%;
+            padding: 14px;
+            background-color: #7b4a1e;
+            border: none;
+            border-radius: 8px;
+            color: white;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background-color 0.3s, transform 0.2s;
+        }
+
+        #server-connect-btn:hover:not(:disabled) {
+            background-color: #5c3614;
+            transform: scale(1.02);
+        }
+
+        #server-connect-btn:disabled {
+            background-color: #b8895a;
+            cursor: not-allowed;
+        }
+
+        .server-setup-hint {
+            margin-top: 16px;
+            font-size: 12px;
+            color: #aaa;
+        }
+
+        #server-status {
+            margin-top: 14px;
+            padding: 12px 14px;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            animation: fadeIn 0.3s ease;
+        }
+
+        #server-status.testing {
+            background: #fff8e1;
+            border: 1px solid #ffe082;
+            color: #7b5800;
+        }
+
+        #server-status.success {
+            background: #e8f8f0;
+            border: 1px solid #a3d9b8;
+            color: #1a6e3c;
+        }
+
+        #server-status.error {
+            background: #fdeaea;
+            border: 1px solid #f5c6c6;
+            color: #c0392b;
+        }
+
+        .status-spinner {
+            width: 16px;
+            height: 16px;
+            border: 2px solid #ffe082;
+            border-top-color: #7b5800;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+            flex-shrink: 0;
+        }
+
+        .setup-divider {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin: 18px 0;
+            color: #bbb;
+            font-size: 12px;
+        }
+
+        .setup-divider::before,
+        .setup-divider::after {
+            content: '';
+            flex: 1;
+            height: 1px;
+            background: #e0e0e0;
+        }
+
+        #latest-connect-btn {
+            width: 100%;
+            padding: 13px;
+            background: linear-gradient(135deg, #2c3e50 0%, #3498db 100%);
+            border: none;
+            border-radius: 8px;
+            color: white;
+            font-size: 15px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: opacity 0.2s, transform 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            margin-bottom: 6px;
+        }
+
+        #latest-connect-btn:hover:not(:disabled) {
+            opacity: 0.88;
+            transform: scale(1.02);
+        }
+
+        #latest-connect-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        .latest-hint {
+            font-size: 11px;
+            color: #bbb;
+            text-align: center;
+            margin-bottom: 4px;
+        }
+
+        /* ===== iframe画面 ===== */
+        #chat-frame-wrap {
+            position: fixed;
+            top: 36px;
+            left: 0;
+            right: 0;
+            bottom: 0;
+        }
+        #chat-frame-wrap.no-bar { top: 0; }
         iframe {
             width: 100%;
             height: 100%;
             border: none;
+            display: block;
         }
     </style>
 </head>
 <body>
 
+    <!-- サーバー情報バー -->
+    <div id="server-info-bar" class="hidden">
+        <span class="bar-label">接続先:</span>
+        <span id="server-url-display"></span>
+        <button id="change-server-btn">サーバーを変更</button>
+    </div>
 
-    <iframe src="https://choco-chat-6-30.onrender.com" title="Choco Chat"></iframe>
+    <!-- サーバー設定画面 -->
+    <div id="server-setup-section" class="hidden">
+        <div class="server-setup-container">
+            <div class="server-setup-logo">🍫</div>
+            <h1>ちょこちゃっとツール</h1>
+            <p class="server-setup-subtitle">接続するサーバーのURLを入力してください</p>
+
+            <button id="latest-connect-btn">⚡ 最新のchatに接続</button>
+            <p class="latest-hint">公式の最新サーバーURLを自動取得して接続します</p>
+
+            <div class="setup-divider">または手動で入力</div>
+
+            <label class="server-setup-label" for="server-url-input">サーバーURL</label>
+            <input type="text" id="server-url-input" placeholder="https://choco-chat-6-30.onrender.com" autocomplete="off" spellcheck="false">
+            <button id="server-connect-btn">接続する</button>
+            <div id="server-status" class="hidden"></div>
+            <p class="server-setup-hint">入力したURLはブラウザに保存されます。変更は画面上部のサーバー情報バーから行えます。</p>
+        </div>
+    </div>
+
+    <!-- iframe表示エリア -->
+    <div id="chat-frame-wrap" class="hidden">
+        <iframe id="chat-frame" title="Choco Chat"></iframe>
+    </div>
+
+    <script>
+(function() {
+    'use strict';
+
+    const infoBar = document.getElementById('server-info-bar');
+    const urlDisplay = document.getElementById('server-url-display');
+    const changeServerBtn = document.getElementById('change-server-btn');
+
+    const setupSection = document.getElementById('server-setup-section');
+    const connectBtn = document.getElementById('server-connect-btn');
+    const latestBtn = document.getElementById('latest-connect-btn');
+    const urlInput = document.getElementById('server-url-input');
+    const statusDiv = document.getElementById('server-status');
+
+    const frameWrap = document.getElementById('chat-frame-wrap');
+    const chatFrame = document.getElementById('chat-frame');
+
+    const STORAGE_KEY = 'chatServerUrl';
+    const LATEST_URL_GITHUB = 'https://raw.githubusercontent.com/kuru-bana/choco-chat-tool/refs/heads/main/url.json';
+    const LATEST_URL_LOCAL  = '/choco-chat-new';
+
+    function showStatus(type, html) {
+        statusDiv.className = type;
+        statusDiv.innerHTML = html;
+        statusDiv.classList.remove('hidden');
+    }
+
+    function normalizeUrl(raw) {
+        let url = raw.trim();
+        if (!url) return '';
+        if (!url.startsWith('http://') && !url.startsWith('https://')) {
+            url = 'https://' + url;
+        }
+        if (url.endsWith('/')) url = url.slice(0, -1);
+        return url;
+    }
+
+    function showFrame(url) {
+        chatFrame.src = url;
+        urlDisplay.textContent = url;
+        setupSection.classList.add('hidden');
+        infoBar.classList.remove('hidden');
+        frameWrap.classList.remove('hidden', 'no-bar');
+    }
+
+    function showSetup() {
+        frameWrap.classList.add('hidden');
+        infoBar.classList.add('hidden');
+        setupSection.classList.remove('hidden');
+        statusDiv.classList.add('hidden');
+        connectBtn.disabled = false;
+        latestBtn.disabled = false;
+        urlInput.disabled = false;
+    }
+
+    async function testConnection(url) {
+        const controller = new AbortController();
+        const timeout = setTimeout(() => controller.abort(), 7000);
+        try {
+            await fetch(url + '/socket.io/?EIO=4&transport=polling', {
+                mode: 'no-cors',
+                signal: controller.signal
+            });
+            clearTimeout(timeout);
+            return { ok: true };
+        } catch (e) {
+            clearTimeout(timeout);
+            return { ok: false, reason: e.name === 'AbortError' ? 'timeout' : 'unreachable' };
+        }
+    }
+
+    async function doConnect() {
+        const url = normalizeUrl(urlInput.value);
+        if (!url) {
+            showStatus('error', '⚠ URLを入力してください');
+            return;
+        }
+
+        connectBtn.disabled = true;
+        latestBtn.disabled = true;
+        urlInput.disabled = true;
+        showStatus('testing', '<div class="status-spinner"></div>接続テスト中...');
+
+        const result = await testConnection(url);
+        if (result.ok) {
+            showStatus('success', '✓ 接続成功！表示します...');
+            setTimeout(() => {
+                localStorage.setItem(STORAGE_KEY, url);
+                showFrame(url);
+            }, 700);
+        } else {
+            connectBtn.disabled = false;
+            latestBtn.disabled = false;
+            urlInput.disabled = false;
+            showStatus('error', result.reason === 'timeout'
+                ? '✗ タイムアウト：サーバーが応答しませんでした。URLを確認してください。'
+                : '✗ 接続失敗：サーバーに到達できません。URLを確認してください。');
+        }
+    }
+
+    async function fetchLatestUrl() {
+        latestBtn.disabled = true;
+        connectBtn.disabled = true;
+        urlInput.disabled = true;
+        showStatus('testing', '<div class="status-spinner"></div>最新URLを取得中...');
+
+        let fetchedUrl = null;
+        let source = '';
+
+        // 1) GitHub から取得を試みる
+        try {
+            const res = await fetch(LATEST_URL_GITHUB, { cache: 'no-store' });
+            if (res.ok) {
+                const json = await res.json();
+                if (json && json.url) {
+                    fetchedUrl = normalizeUrl(json.url);
+                    source = 'GitHub';
+                }
+            }
+        } catch (_) {}
+
+        // 2) GitHub が失敗したら同一オリジンの /choco-chat-new を試みる
+        if (!fetchedUrl) {
+            try {
+                const res = await fetch(LATEST_URL_LOCAL, { cache: 'no-store' });
+                if (res.ok) {
+                    const json = await res.json();
+                    if (json && json.url) {
+                        fetchedUrl = normalizeUrl(json.url);
+                        source = 'ローカル';
+                    }
+                }
+            } catch (_) {}
+        }
+
+        if (!fetchedUrl) {
+            latestBtn.disabled = false;
+            connectBtn.disabled = false;
+            urlInput.disabled = false;
+            showStatus('error',
+                '✗ 最新URL取得に失敗しました。<br>' +
+                '<span style="font-size:12px;font-weight:normal;">手動でURLを入力するか、' +
+                '<code style="background:#fdd;padding:1px 4px;border-radius:3px;">GET /choco-chat-new</code> ' +
+                'エンドポイントで <code>{"url":"..."}</code> を返すようにしてください。</span>'
+            );
+            return;
+        }
+
+        showStatus('testing', `<div class="status-spinner"></div>${source}から取得完了。接続テスト中...`);
+        urlInput.value = fetchedUrl;
+
+        const result = await testConnection(fetchedUrl);
+        if (result.ok) {
+            showStatus('success', `✓ 接続成功！（${source}）表示します...`);
+            setTimeout(() => {
+                localStorage.setItem(STORAGE_KEY, fetchedUrl);
+                showFrame(fetchedUrl);
+            }, 700);
+        } else {
+            latestBtn.disabled = false;
+            connectBtn.disabled = false;
+            urlInput.disabled = false;
+            const msg = result.reason === 'timeout' ? 'タイムアウト' : '到達不能';
+            showStatus('error',
+                `✗ URLは取得できましたが接続に失敗しました（${msg}）。<br>` +
+                `<span style="font-size:12px;font-weight:normal;">取得されたURL: <code>${fetchedUrl}</code></span>`
+            );
+        }
+    }
+
+    changeServerBtn.addEventListener('click', () => {
+        localStorage.removeItem(STORAGE_KEY);
+        showSetup();
+    });
+
+    connectBtn.addEventListener('click', doConnect);
+    latestBtn.addEventListener('click', fetchLatestUrl);
+    urlInput.addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') doConnect();
+    });
+    urlInput.addEventListener('input', () => {
+        statusDiv.classList.add('hidden');
+    });
+
+    // 初期表示: 保存済みURLがあればそのままiframe表示、なければ設定画面
+    const stored = localStorage.getItem(STORAGE_KEY);
+    if (stored) {
+        showFrame(stored);
+    } else {
+        showSetup();
+    }
+})();
+    </script>
 
 </body>
 </html>

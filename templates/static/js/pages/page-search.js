@@ -283,58 +283,22 @@ async function startShortsAutoFetch(q, region, gen) {
 
   async function runChocoApi() {
     let added = 0;
-    const CHOCO_BASE = 'https://choco-yt-node-api.onrender.com/yj/search';
     const MAX_PAGES = 10;
-
-    // レスポンス例: { query, page, source, shorts: [{id, title, viewCount:"939K views", thumbnail, url}] }
-    function _parseChocoViewCount(str) {
-      if (!str) return 0;
-      const s = String(str).replace(/\s*views?$/i, '').replace(/,/g, '').trim();
-      const m = s.match(/^([\d.]+)([KMBkmb]?)$/);
-      if (!m) return 0;
-      const num = parseFloat(m[1]);
-      const suf = m[2].toUpperCase();
-      if (suf === 'K') return Math.round(num * 1000);
-      if (suf === 'M') return Math.round(num * 1000000);
-      if (suf === 'B') return Math.round(num * 1000000000);
-      return Math.round(num);
-    }
-
-    function _normalizeChocoItem(item) {
-      // id フィールドが正式なvideoId
-      const videoId = item.id || item.videoId || item.video_id || '';
-      if (!videoId || typeof videoId !== 'string' || videoId.length < 8) return null;
-      const thumb = item.thumbnail || item.thumbnailUrl || item.thumbnail_url || '';
-      return {
-        type: 'video',
-        videoId,
-        title: item.title || '',
-        author: item.author || item.channel || item.channelName || item.uploader || '',
-        authorId: item.authorId || item.channelId || item.channel_id || '',
-        lengthSeconds: 0,
-        isShort: true,
-        viewCount: _parseChocoViewCount(item.viewCount || item.views || item.view_count || ''),
-        publishedText: item.publishedText || item.published_text || item.uploadedDate || '',
-        videoThumbnails: thumb ? [{ quality: 'medium', url: thumb }] : [],
-        _source: 'choco',
-      };
-    }
 
     for (let page = 1; page <= MAX_PAGES; page++) {
       if (gen !== shortsAutoGen) break;
       try {
-        const url = `${CHOCO_BASE}?q=${encodeURIComponent(q)}&shorts&page=${page}`;
-        const res = await fetch(url, { signal: _makeSignal(12000) });
+        const url = `/api/choco-shorts-search?q=${encodeURIComponent(q)}&page=${page}`;
+        const res = await fetch(url, { signal: _makeSignal(20000) });
         if (!res.ok) break;
-        const raw = await res.json();
+        const data = await res.json();
         if (gen !== shortsAutoGen) break;
-        // レスポンスは raw.shorts 配列に格納される
-        const items = Array.isArray(raw) ? raw : (raw.shorts || raw.items || raw.results || raw.videos || []);
+        if (data.error) { console.warn('[ChocoAPI]', data.error); break; }
+        const items = data.items || [];
         if (!items.length) break;
-        const normalized = items.map(_normalizeChocoItem).filter(Boolean);
-        const c = _addShorts(normalized);
+        const c = _addShorts(items);
         added += c;
-        if (c === 0 && normalized.length > 0) break;
+        if (c === 0 && items.length > 0) break;
         await new Promise(r => setTimeout(r, 300));
       } catch (e) {
         console.warn(`[ChocoAPI] page ${page} error:`, e);

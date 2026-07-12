@@ -229,6 +229,8 @@
   <script src="/static/js/pages/page-shorts.js?v={{ static_ver }}"></script>
   {% block scripts %}{% endblock %}
   <script>
+    initHeaderSearch();
+
     fetch('/version').then(r=>r.json()).then(d=>{
       const el = document.getElementById('logoVer');
       if(el && d.ver) el.textContent = ' v' + d.ver;

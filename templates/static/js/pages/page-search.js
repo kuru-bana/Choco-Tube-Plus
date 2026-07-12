@@ -280,11 +280,58 @@ async function startShortsAutoFetch(q, region, gen) {
     return added;
   }
 
-  const runners = { xeroxyt: runXeroxyt, cse: runCse, invidious: runInvidious, innertube: runInnertube };
+  async function runChocoApi() {
+    let added = 0;
+    const CHOCO_BASE = 'https://choco-yt-node-api.onrender.com/yj/search';
+    const MAX_PAGES = 10;
+
+    function _normalizeChocoItem(item) {
+      const videoId = item.videoId || item.id || item.video_id || '';
+      if (!videoId || typeof videoId !== 'string' || videoId.length < 8) return null;
+      const lengthSeconds = item.lengthSeconds || item.duration || item.length_seconds || 0;
+      const thumb = item.thumbnail || item.thumbnailUrl || item.thumbnail_url || '';
+      return {
+        type: 'video',
+        videoId,
+        title: item.title || '',
+        author: item.author || item.channel || item.channelName || item.uploader || '',
+        authorId: item.authorId || item.channelId || item.channel_id || '',
+        lengthSeconds: typeof lengthSeconds === 'number' ? lengthSeconds : parseInt(lengthSeconds) || 0,
+        viewCount: item.viewCount || item.views || item.view_count || 0,
+        publishedText: item.publishedText || item.published_text || item.uploadedDate || '',
+        videoThumbnails: thumb ? [{ quality: 'medium', url: thumb }] : [],
+        _source: 'choco',
+      };
+    }
+
+    for (let page = 1; page <= MAX_PAGES; page++) {
+      if (gen !== shortsAutoGen) break;
+      try {
+        const url = `${CHOCO_BASE}?q=${encodeURIComponent(q)}&shorts&page=${page}`;
+        const res = await fetch(url, { signal: _makeSignal(12000) });
+        if (!res.ok) break;
+        const raw = await res.json();
+        if (gen !== shortsAutoGen) break;
+        const items = Array.isArray(raw) ? raw : (raw.items || raw.results || raw.videos || []);
+        if (!items.length) break;
+        const normalized = items.map(_normalizeChocoItem).filter(Boolean);
+        const c = _addShorts(normalized);
+        added += c;
+        if (c === 0 && normalized.length > 0) break;
+        await new Promise(r => setTimeout(r, 300));
+      } catch (e) {
+        console.warn(`[ChocoAPI] page ${page} error:`, e);
+        break;
+      }
+    }
+    return added;
+  }
+
+  const runners = { choco: runChocoApi, xeroxyt: runXeroxyt, cse: runCse, invidious: runInvidious, innertube: runInnertube };
 
   // ---- Read source order + enabled from settings ----
-  const DEFAULT_ORDER   = ['xeroxyt', 'cse', 'invidious', 'innertube'];
-  const DEFAULT_ENABLED = { xeroxyt: true, cse: true, invidious: true, innertube: true };
+  const DEFAULT_ORDER   = ['choco', 'xeroxyt', 'cse', 'invidious', 'innertube'];
+  const DEFAULT_ENABLED = { choco: true, xeroxyt: true, cse: true, invidious: true, innertube: true };
   let sourceOrder, sourceEnabled;
   try {
     const _s = (typeof getSettings === 'function') ? getSettings() : {};

@@ -286,10 +286,24 @@ async function startShortsAutoFetch(q, region, gen) {
     const CHOCO_BASE = 'https://choco-yt-node-api.onrender.com/yj/search';
     const MAX_PAGES = 10;
 
+    // レスポンス例: { query, page, source, shorts: [{id, title, viewCount:"939K views", thumbnail, url}] }
+    function _parseChocoViewCount(str) {
+      if (!str) return 0;
+      const s = String(str).replace(/\s*views?$/i, '').replace(/,/g, '').trim();
+      const m = s.match(/^([\d.]+)([KMBkmb]?)$/);
+      if (!m) return 0;
+      const num = parseFloat(m[1]);
+      const suf = m[2].toUpperCase();
+      if (suf === 'K') return Math.round(num * 1000);
+      if (suf === 'M') return Math.round(num * 1000000);
+      if (suf === 'B') return Math.round(num * 1000000000);
+      return Math.round(num);
+    }
+
     function _normalizeChocoItem(item) {
-      const videoId = item.videoId || item.id || item.video_id || '';
+      // id フィールドが正式なvideoId
+      const videoId = item.id || item.videoId || item.video_id || '';
       if (!videoId || typeof videoId !== 'string' || videoId.length < 8) return null;
-      const lengthSeconds = item.lengthSeconds || item.duration || item.length_seconds || 0;
       const thumb = item.thumbnail || item.thumbnailUrl || item.thumbnail_url || '';
       return {
         type: 'video',
@@ -297,8 +311,9 @@ async function startShortsAutoFetch(q, region, gen) {
         title: item.title || '',
         author: item.author || item.channel || item.channelName || item.uploader || '',
         authorId: item.authorId || item.channelId || item.channel_id || '',
-        lengthSeconds: typeof lengthSeconds === 'number' ? lengthSeconds : parseInt(lengthSeconds) || 0,
-        viewCount: item.viewCount || item.views || item.view_count || 0,
+        lengthSeconds: 0,
+        isShort: true,
+        viewCount: _parseChocoViewCount(item.viewCount || item.views || item.view_count || ''),
         publishedText: item.publishedText || item.published_text || item.uploadedDate || '',
         videoThumbnails: thumb ? [{ quality: 'medium', url: thumb }] : [],
         _source: 'choco',
@@ -313,7 +328,8 @@ async function startShortsAutoFetch(q, region, gen) {
         if (!res.ok) break;
         const raw = await res.json();
         if (gen !== shortsAutoGen) break;
-        const items = Array.isArray(raw) ? raw : (raw.items || raw.results || raw.videos || []);
+        // レスポンスは raw.shorts 配列に格納される
+        const items = Array.isArray(raw) ? raw : (raw.shorts || raw.items || raw.results || raw.videos || []);
         if (!items.length) break;
         const normalized = items.map(_normalizeChocoItem).filter(Boolean);
         const c = _addShorts(normalized);

@@ -402,6 +402,31 @@ body.page-shorts .sf-param-select:focus {
   margin-left: 0.2rem;
 }
 
+.shorts-shelf-sources {
+  display: flex;
+  gap: 4px;
+  flex-wrap: wrap;
+  align-items: center;
+  margin-left: 0.5rem;
+}
+
+.shorts-source-badge {
+  font-size: 0.68rem;
+  font-weight: 600;
+  padding: 1px 7px;
+  border-radius: 20px;
+  white-space: nowrap;
+  background: rgba(255,255,255,0.08);
+  color: var(--muted);
+  border: 1px solid rgba(255,255,255,0.1);
+}
+
+.shorts-source-choco   { background: rgba(205,133,63,0.18); color: #cd853f; border-color: rgba(205,133,63,0.35); }
+.shorts-source-xeroxyt { background: rgba(100,149,237,0.18); color: #6495ed; border-color: rgba(100,149,237,0.35); }
+.shorts-source-cse     { background: rgba(80,200,120,0.18); color: #50c878; border-color: rgba(80,200,120,0.35); }
+.shorts-source-invidious  { background: rgba(220,100,100,0.18); color: #e07070; border-color: rgba(220,100,100,0.35); }
+.shorts-source-innertube  { background: rgba(170,100,220,0.18); color: #c070e0; border-color: rgba(170,100,220,0.35); }
+
 .shorts-shelf-scroll {
   display: grid;
   grid-template-rows: repeat(2, auto);

@@ -169,6 +169,21 @@ function createShortsCard(video, { channelId = null, searchQuery = null, shortsL
   return a;
 }
 
+function updateShortsShelfSources(shelfEl, sources) {
+  const sourcesEl = shelfEl.querySelector('.shorts-shelf-sources');
+  if (!sourcesEl) return;
+  const SOURCE_LABELS = {
+    choco: 'チョコAPI',
+    xeroxyt: 'Xeroxyt',
+    cse: 'CSE',
+    invidious: 'Invidious',
+    innertube: 'InnerTube',
+  };
+  sourcesEl.innerHTML = sources.map(s =>
+    `<span class="shorts-source-badge shorts-source-${s}">${SOURCE_LABELS[s] || s}</span>`
+  ).join('');
+}
+
 function createShortsShelf(shorts, { searchQuery = null } = {}) {
   const wrap = document.createElement('div');
   wrap.className = 'shorts-shelf';
@@ -180,6 +195,7 @@ function createShortsShelf(shorts, { searchQuery = null } = {}) {
     </div>
     <span class="shorts-shelf-title">ショート</span>
     <span class="shorts-shelf-count">${shorts.length}件</span>
+    <span class="shorts-shelf-sources"></span>
   `;
   const scroll = document.createElement('div');
   scroll.className = 'shorts-shelf-scroll';

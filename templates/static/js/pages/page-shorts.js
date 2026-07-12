@@ -579,7 +579,21 @@
           prefetchMoreSearch();
         }
       } else if (metaResult) {
-        prefetchMoreRecs(startId, metaResult);
+        // リストも検索クエリもない場合 → タイトルで検索してショートリストを構築
+        const titleQ = (metaResult.title || '').trim();
+        if (titleQ) {
+          searchMode = true;
+          const ok = await buildSearchQueue(titleQ, startId, null);
+          if (!ok) {
+            searchMode = false;
+            searchQueryStr = null;
+            prefetchMoreRecs(startId, metaResult);
+          } else if (queueIdx >= queue.length - 3) {
+            prefetchMoreSearch();
+          }
+        } else {
+          prefetchMoreRecs(startId, metaResult);
+        }
       }
 
       updateNavBtns();

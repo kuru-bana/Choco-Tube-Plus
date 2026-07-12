@@ -1,4 +1,9 @@
+let _headerSearchInitialized = false;
+
 function initHeaderSearch(options) {
+  if (_headerSearchInitialized) return;
+  _headerSearchInitialized = true;
+
   const onSubmit = (options && options.onSubmit) || function(q) {
     window.location.href = buildSearchUrl({ q });
   };

@@ -12,6 +12,7 @@ let shortsSeenIds = new Set();
 let shortsShelfEl = null;
 let shortsAutoGen = 0;
 let currentSearchQuery = '';
+let shortsSourcesUsed = [];
 
 function getFilters() {
   return {
@@ -352,6 +353,10 @@ async function startShortsAutoFetch(q, region, gen) {
     console.log(`[Shorts] trying source: ${srcId}`);
     const added = await runners[srcId]();
     console.log(`[Shorts] ${srcId} → ${added} new shorts (total: ${allShortsFound.length})`);
+    if (added > 0 && gen === shortsAutoGen) {
+      shortsSourcesUsed.push(srcId);
+      if (shortsShelfEl) updateShortsShelfSources(shortsShelfEl, shortsSourcesUsed);
+    }
     if (allShortsFound.length >= FALLBACK_THRESHOLD) break;
   }
 
@@ -508,6 +513,7 @@ async function doSearch(resetPage = false) {
     shortsAutoGen++;
     currentSearchQuery = q;
     pipedNextpages = {};
+    shortsSourcesUsed = [];
     const section = document.getElementById('shortsSection');
     if (section) { section.innerHTML = ''; section.hidden = true; }
   }

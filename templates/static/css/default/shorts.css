@@ -345,18 +345,20 @@ body.page-shorts .sf-param-select:focus {
   align-items: center;
   padding: 0.5rem 0.25rem;
   min-height: 60px;
+  grid-row: 1 / -1;
+}
+
+.shorts-empty-text {
+  grid-row: 1 / -1;
+  font-size: 0.82rem;
+  color: var(--muted);
+  padding: 0.5rem 0.25rem;
 }
 
 .shorts-loading-text {
   font-size: 0.82rem;
   color: var(--muted);
   animation: pulse-opacity 1.4s ease-in-out infinite;
-}
-
-.shorts-empty-text {
-  font-size: 0.82rem;
-  color: var(--muted);
-  padding: 0.5rem 0.25rem;
 }
 
 @keyframes pulse-opacity {
@@ -401,11 +403,13 @@ body.page-shorts .sf-param-select:focus {
 }
 
 .shorts-shelf-scroll {
-  display: flex;
-  gap: 0.75rem;
+  display: grid;
+  grid-template-rows: repeat(2, auto);
+  grid-auto-flow: column;
+  grid-auto-columns: 160px;
+  gap: 0.6rem 0.75rem;
   overflow-x: auto;
   padding-bottom: 0.75rem;
-  scroll-snap-type: x mandatory;
   scrollbar-width: thin;
   scrollbar-color: var(--border) transparent;
 }
@@ -417,7 +421,6 @@ body.page-shorts .sf-param-select:focus {
 .shorts-shelf-scroll::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
 
 .shorts-shelf-scroll .short-card {
-  scroll-snap-align: start;
   width: 160px;
 }
 

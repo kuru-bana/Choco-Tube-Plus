@@ -285,6 +285,70 @@ def _is_xeroxyt_short(item: dict) -> bool:
     return False
 
 
+# ── チョコAPI shorts search proxy ────────────────────────────────────────────
+
+CHOCO_API_BASE = "https://choco-yt-node-api.onrender.com/yj/search"
+
+
+def _parse_choco_view_count(raw: str) -> int:
+    """'939K views' / '1.7M views' などの文字列を整数に変換する"""
+    if not raw:
+        return 0
+    s = str(raw).lower().replace("views", "").replace(",", "").strip()
+    try:
+        if s.endswith("k"):
+            return int(float(s[:-1]) * 1_000)
+        if s.endswith("m"):
+            return int(float(s[:-1]) * 1_000_000)
+        if s.endswith("b"):
+            return int(float(s[:-1]) * 1_000_000_000)
+        return int(float(s))
+    except (ValueError, TypeError):
+        return 0
+
+
+def _normalize_choco_item(item: dict) -> dict | None:
+    video_id = item.get("id") or item.get("videoId") or item.get("video_id") or ""
+    if not video_id or len(video_id) < 8:
+        return None
+    thumb = item.get("thumbnail") or item.get("thumbnailUrl") or ""
+    return {
+        "type": "video",
+        "videoId": video_id,
+        "title": item.get("title") or "",
+        "author": item.get("author") or item.get("channel") or item.get("channelName") or "",
+        "authorId": item.get("authorId") or item.get("channelId") or "",
+        "lengthSeconds": 0,
+        "isShort": True,
+        "viewCount": _parse_choco_view_count(item.get("viewCount") or item.get("views") or ""),
+        "publishedText": item.get("publishedText") or item.get("uploadedDate") or "",
+        "videoThumbnails": [{"quality": "medium", "url": thumb}] if thumb else [],
+        "_source": "choco",
+    }
+
+
+@router.get("/api/choco-shorts-search")
+async def choco_shorts_search(q: str = Query(...), page: int = Query(1, ge=1, le=10)):
+    """チョコAPIのショート検索をサーバー側でプロキシする"""
+    client = await get_client()
+    try:
+        resp = await client.get(
+            CHOCO_API_BASE,
+            params={"q": q, "shorts": "", "page": page},
+            timeout=httpx.Timeout(15.0),
+        )
+        resp.raise_for_status()
+        raw = resp.json()
+    except Exception as e:
+        return JSONResponse({"error": str(e), "items": []}, status_code=502)
+
+    items_raw = raw if isinstance(raw, list) else (
+        raw.get("shorts") or raw.get("items") or raw.get("results") or raw.get("videos") or []
+    )
+    items = [n for item in items_raw if (n := _normalize_choco_item(item))]
+    return JSONResponse({"items": items, "page": page})
+
+
 @router.get("/api/xeroxyt-shorts-search-stream")
 async def xeroxyt_shorts_search_stream(q: str = Query(...)):
     """SSE endpoint: streams short-video batches as each sub-request completes."""

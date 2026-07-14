@@ -512,6 +512,12 @@ async def proxy_parallel(
     except Exception as exc:
         if not fut.done():
             fut.set_exception(exc)
+            # 「Future exception was never retrieved」警告を防ぐため、
+            # セットした例外を即座に取得済みとしてマークする
+            try:
+                fut.exception()
+            except Exception:
+                pass
         raise
     finally:
         _proxy_inflight.pop(cache_key, None)

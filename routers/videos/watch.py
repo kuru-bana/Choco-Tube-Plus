@@ -493,11 +493,20 @@ async def api_video_info(video_id: str, nocache: bool = False):
 
         if not fut.done():
             fut.set_exception(Exception("fetch failed"))
+            # 「Future exception was never retrieved」警告を防ぐため取得済みとマーク
+            try:
+                fut.exception()
+            except Exception:
+                pass
         return JSONResponse({"error": "動画情報の取得に失敗しました"}, status_code=502)
 
     except Exception as exc:
         if not fut.done():
             fut.set_exception(exc)
+            try:
+                fut.exception()
+            except Exception:
+                pass
         raise
     finally:
         if not nocache:

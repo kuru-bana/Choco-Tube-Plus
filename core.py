@@ -137,7 +137,7 @@ _proxy_resp_ttl: dict = {
     "playlist":        180,
 }
 _PROXY_RESP_DEFAULT_TTL = 60
-_PROXY_RESP_MAX_SIZE = 500
+_PROXY_RESP_MAX_SIZE = 150
 
 # ── In-flight request deduplication ──────────────────────────────────────────
 

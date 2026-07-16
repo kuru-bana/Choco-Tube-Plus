@@ -64,6 +64,11 @@ async def tool_youtube_uowtube():
     return FileResponse("templates/tool/youtube/uowtube.html", media_type="text/html")
 
 
+@router.get("/tool/youtube/ikura")
+async def tool_youtube_ikura():
+    return FileResponse("templates/tool/youtube/ikura.html", media_type="text/html")
+
+
 @router.get("/tool/youtube/wista")
 @router.get("/tool/youtube/wista/")
 @router.get("/tool/youtube/wista/{path:path}")

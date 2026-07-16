@@ -89,6 +89,8 @@ async def _zs0(video_id:str,formatId:int=_ZF_D):
         async with httpx.AsyncClient(timeout=httpx.Timeout(18.0),follow_redirects=False) as _cl:_rp=await _cl.get(_tu,headers={"User-Agent":_ZUA})
         _loc=_rp.headers.get("location","")
         if not _loc:return JSONResponse({"error":f"e{_rp.status_code}"},status_code=502)
+        if len(_ZC)>=200:
+            _oldest=min(_ZC,key=lambda k:_ZC[k]["e"]);_ZC.pop(_oldest,None)
         _ZC[_ck]={"u":_loc,"e":_now+_ZT};return PlainTextResponse(_loc)
     except Exception as _e:return JSONResponse({"error":str(_e)},status_code=500)
 async def _zf1(client:httpx.AsyncClient,video_id:str,fmt:int)->dict:
@@ -172,6 +174,8 @@ async def _ss0(video_id:str):
         if not _rp.is_success:return JSONResponse({'error':f'e{_rp.status_code}'},status_code=502)
         _raw=_rp.json();_res=_sny(_raw)
         if not _res['formatStreams']and not _res['adaptiveFormats']:return JSONResponse({'error':'empty_streams'},status_code=502)
+        if len(_SC)>=200:
+            _oldest=min(_SC,key=lambda k:_SC[k]["e"]);_SC.pop(_oldest,None)
         _SC[_ck]={"d":_res,"e":_now+_ST};return JSONResponse(_res,headers={'X-Instance-Used':'sia'})
     except Exception as _e:return JSONResponse({'error':str(_e)},status_code=500)
 

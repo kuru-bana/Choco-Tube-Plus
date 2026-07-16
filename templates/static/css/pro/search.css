@@ -120,6 +120,11 @@
   .filter-bar { top: 55px; }
 }
 
+/* ===== SOURCE BADGE ===== */
+[data-ui="pro"] .search-source-badge.source-piped    { background: #1b3a1e; color: #81c784; border-color: #388e3c; }
+[data-ui="pro"] .search-source-badge.source-invidious { background: #0d2137; color: #64b5f6; border-color: #1565c0; }
+[data-ui="pro"] .search-source-badge.source-youtubei  { background: #3a1f00; color: #ffb74d; border-color: #e65100; }
+
 /* ===== SEARCH RESULTS — HORIZONTAL LIST LAYOUT ===== */
 
 .page-search .video-grid {

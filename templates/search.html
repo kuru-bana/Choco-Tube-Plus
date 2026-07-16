@@ -119,26 +119,6 @@
   </div>
 </div>
 
-<style>
-  .filter-bar[data-search-source="piped"] .filter-group[data-source="invidious"] { display: none; }
-  .filter-bar[data-search-source="invidious"] .filter-group[data-source="piped"] { display: none; }
-  .search-source-badge {
-    display: inline-flex;
-    align-items: center;
-    gap: 4px;
-    font-size: 11px;
-    font-weight: 600;
-    padding: 2px 8px;
-    border-radius: 10px;
-    margin-left: 8px;
-    vertical-align: middle;
-  }
-  .search-source-badge.source-piped { background: #e8f5e9; color: #2e7d32; border: 1px solid #a5d6a7; }
-  .search-source-badge.source-invidious { background: #e3f2fd; color: #1565c0; border: 1px solid #90caf9; }
-  [data-ui="pro"] .search-source-badge.source-piped { background: #1b3a1e; color: #81c784; border-color: #388e3c; }
-  [data-ui="pro"] .search-source-badge.source-invidious { background: #0d2137; color: #64b5f6; border-color: #1565c0; }
-</style>
-
 <div class="filter-bar" id="filterBar" data-search-source="invidious">
     <div class="filter-bar-inner">
 
@@ -224,6 +204,18 @@
           <option value="music_videos">音楽（動画）</option>
           <option value="music_albums">音楽（アルバム）</option>
           <option value="music_playlists">音楽（プレイリスト）</option>
+        </select>
+      </div>
+
+      <!-- YouTubei.js-specific filters -->
+      <div class="filter-group" data-source="youtubei">
+        <label class="filter-label">種別</label>
+        <select id="yjFilterSelect" class="filter-select">
+          <option value="all">すべて</option>
+          <option value="videos">動画</option>
+          <option value="shorts">ショート</option>
+          <option value="channels">チャンネル</option>
+          <option value="playlists">再生リスト</option>
         </select>
       </div>
 

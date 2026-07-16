@@ -1,3 +1,4 @@
+import random
 import time
 
 import httpx
@@ -156,6 +157,107 @@ async def api_piped_search(
         except Exception as e:
             last_err = e
     return JSONResponse({"error": str(last_err or "all piped instances failed")}, status_code=502)
+
+
+# ── YouTubei.js search ────────────────────────────────────────────────────────
+
+_YJ_INSTANCES = [
+    "https://choco-yt-node-api.onrender.com",
+    "https://node-yt-api-2.onrender.com",
+]
+
+_YJ_CACHE: dict = {}
+_YJ_TTL = 60
+_YJ_MAX = 150
+
+
+def _normalize_yj_item(item: dict) -> dict | None:
+    t = item.get("type", "")
+    item_id = item.get("id", "")
+    if not item_id:
+        return None
+    thumb = item.get("thumbnail", "")
+    if t in ("video", "short"):
+        return {
+            "type": "video",
+            "videoId": item_id,
+            "title": item.get("title", ""),
+            "author": item.get("author", ""),
+            "authorId": "",
+            "lengthSeconds": item.get("duration", 0) or 0,
+            "viewCount": item.get("views", 0) or 0,
+            "publishedText": str(item.get("published", "") or ""),
+            "videoThumbnails": [{"quality": "medium", "url": thumb}] if thumb else [],
+            "isShort": t == "short",
+            "_source": "youtubei",
+        }
+    elif t == "channel":
+        return {
+            "type": "channel",
+            "authorId": item_id,
+            "author": item.get("title", "") or item.get("author", ""),
+            "description": "",
+            "authorThumbnails": [{"quality": "medium", "url": thumb}] if thumb else [],
+            "subCount": 0,
+            "_source": "youtubei",
+        }
+    elif t == "playlist":
+        return {
+            "type": "playlist",
+            "playlistId": item_id,
+            "title": item.get("title", ""),
+            "author": item.get("author", ""),
+            "videoCount": 0,
+            "playlistThumbnail": thumb,
+            "_source": "youtubei",
+        }
+    return None
+
+
+@router.get("/api/yj-search")
+async def api_yj_search(
+    q: str = Query(...),
+    page: int = Query(default=1),
+    filter: str = Query(default="all"),
+):
+    cache_key = f"yj:{q}:{page}:{filter}"
+    now = time.time()
+    cached = _YJ_CACHE.get(cache_key)
+    if cached and now - cached["time"] < _YJ_TTL:
+        return JSONResponse(cached["data"])
+
+    instance = random.choice(_YJ_INSTANCES)
+    client = await get_client()
+    params: dict = {"q": q, "page": page}
+    if filter and filter != "all":
+        params[filter] = "true"
+
+    try:
+        resp = await client.get(
+            f"{instance}/yj/search",
+            params=params,
+            timeout=httpx.Timeout(15.0),
+        )
+        if not resp.is_success:
+            return JSONResponse({"error": f"HTTP {resp.status_code}"}, status_code=502)
+        raw = resp.json()
+        results_raw = raw.get("results", [])
+        results = [r for item in results_raw if (r := _normalize_yj_item(item)) is not None]
+        data = {
+            "results": results,
+            "page": raw.get("page", page),
+            "count": raw.get("count", len(results)),
+            "_source": "youtubei",
+            "_instance": instance,
+        }
+        if results:
+            if len(_YJ_CACHE) >= _YJ_MAX:
+                oldest = min(_YJ_CACHE, key=lambda k: _YJ_CACHE[k]["time"])
+                _YJ_CACHE.pop(oldest, None)
+            _YJ_CACHE[cache_key] = {"data": data, "time": time.time()}
+        return JSONResponse(data)
+    except Exception as e:
+        return JSONResponse({"error": str(e)}, status_code=502)
 
 
 @router.get("/api/piped-suggestions")

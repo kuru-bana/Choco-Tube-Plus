@@ -17,7 +17,7 @@ async def whats():
 
 @router.get("/version")
 async def version():
-    return {"ver": "1.47"}
+    return {"ver": "1.48"}
 
 
 # ── Link list status ──────────────────────────────────────────────────────────
